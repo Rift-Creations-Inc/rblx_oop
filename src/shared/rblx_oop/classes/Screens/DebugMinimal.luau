@@ -263,7 +263,7 @@ function DebugMinimal.update(self: DebugMinimal)
 
     --left side updates
         -- selene: allow(undefined_variable)
-    self.drawables[1]:setText(`G: {currentGame} J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
+    self.drawables[1]:setText(`G: "{currentGame}" J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
     self.drawables[2]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
     self.drawables[3]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
     self.drawables[4]:setText(` `)
