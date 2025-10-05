@@ -5,18 +5,7 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "src/shared",
-
-        "rblx_oop": {
-          "$path": "src/shared/rblx_oop",
-
-          "runtime": {
-            "$path": "src/shared/rblx_oop/runtime",
-            "SharedVarsEvent": {
-              "$className": "RemoteEvent"
-            }
-          }
-        }
+        "$path": "src/shared"
       }
     },
 
