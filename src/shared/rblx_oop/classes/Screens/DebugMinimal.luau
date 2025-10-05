@@ -74,7 +74,7 @@ export type DebugMinimal = {
 local DebugMinimal = {}
 DebugMinimal.__index = DebugMinimal
 
-local SCREEN_LABEL = `Debug screen: Minimal information {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: Minimal {screenShared.HELP}`
 
 function DebugMinimal.new(): DebugMinimal
     local self: DebugMinimal = setmetatable({}, DebugMinimal)
@@ -255,16 +255,17 @@ function DebugMinimal.update(self: DebugMinimal)
     local cpuFt = string.format("%.4f",info.render.renderCpuFrameTime)
 
     local serverT = sharedv['server/type']
-
+    local playerCount = sharedv['game/playerCount']
+    local jobId = game.JobId
 
     local plr = game:GetService('Players').LocalPlayer
     local ping = math.floor((game:GetService('Players').LocalPlayer:GetNetworkPing() * 1000))
 
     --left side updates
         -- selene: allow(undefined_variable)
-    self.drawables[1]:setText(`{currentGame} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
-    self.drawables[2]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt} `)
-    self.drawables[3]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx`)
+    self.drawables[1]:setText(`{currentGame} J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
+    self.drawables[2]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
+    self.drawables[3]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
     self.drawables[4]:setText(` `)
 
     --client

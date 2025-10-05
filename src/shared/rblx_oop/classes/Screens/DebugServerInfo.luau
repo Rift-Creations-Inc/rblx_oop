@@ -17,7 +17,7 @@ local sharedv = {}
 print(`binding local table: 'sharedv' to SharedVars`)
 SharedVars.bind(sharedv)
 
-export type DebugScreen = {
+export type DebugServerInfo = {
     enabled: boolean,
     
     drawables: { Text.Text },
@@ -32,58 +32,58 @@ export type DebugScreen = {
     containerRight: Frame?,
 
     restoreOriginal: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     setupDrawables: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     setupRightDrawables: (
-        self: DebugScreen,
+        self: DebugServerInfo,
         fontColor: Color3
     ) -> (),
 
     setupLeftDrawables: (
-        self: DebugScreen,
+        self: DebugServerInfo,
         fontColor: Color3
     ) -> (),
 
 
     bindToggle: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     update: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     show: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     hide: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> (),
 
     toggle: (
-        self: DebugScreen
+        self: DebugServerInfo
     ) -> ()
 }
 
-local DebugScreen = {}
-DebugScreen.__index = DebugScreen
+local DebugServerInfo = {}
+DebugServerInfo.__index = DebugServerInfo
 
-local SCREEN_LABEL = `Debug screen: General {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: Server {screenShared.HELP}`
 
-function DebugScreen.new(): DebugScreen
-    local self: DebugScreen = setmetatable({}, DebugScreen)
+function DebugServerInfo.new(): DebugServerInfo
+    local self: DebugServerInfo = setmetatable({}, DebugServerInfo)
     self.enabled = false
     self.drawables = {}
     self.drawablesRight = {}
-    self.graphics = Graphics2D.new("DebugHUD;DebugScreen")
+    self.graphics = Graphics2D.new("DebugHUD:DebugServerInfo")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F4
+    self.toggleKey = Enum.KeyCode.F6
 
     --self:bindToggle()
     self:hide()
@@ -91,8 +91,8 @@ function DebugScreen.new(): DebugScreen
     return self
 end
 
-function DebugScreen.setupLeftDrawables(self: DebugScreen,fontColor: Color3)
-    local labels = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+function DebugServerInfo.setupLeftDrawables(self: DebugServerInfo,fontColor: Color3)
+    local labels = {1,2,3,4,5,6,7,8,9}
 
     for i, _ in ipairs(labels) do
         local drawable = Text.new({
@@ -107,7 +107,7 @@ function DebugScreen.setupLeftDrawables(self: DebugScreen,fontColor: Color3)
     end
 end
 
-function DebugScreen.setupRightDrawables(self: DebugScreen, fontColor: Color3)
+function DebugServerInfo.setupRightDrawables(self: DebugServerInfo, fontColor: Color3)
     local labels = {1,2}
 
     for i, _ in ipairs(labels) do
@@ -123,7 +123,7 @@ function DebugScreen.setupRightDrawables(self: DebugScreen, fontColor: Color3)
     end
 end
 
-function DebugScreen.setupDrawables(self: DebugScreen)
+function DebugServerInfo.setupDrawables(self: DebugServerInfo)
     local fontColor = Color3.fromRGB(255, 255, 255)
 
     local wrapper = Instance.new('Frame')
@@ -187,7 +187,7 @@ function DebugScreen.setupDrawables(self: DebugScreen)
     --self:setupRightDrawables(fontColor)
 end
 
-function DebugScreen.bindToggle(self: DebugScreen)
+function DebugServerInfo.bindToggle(self: DebugServerInfo)
     UserInputService.InputBegan:Connect(function(inp,gp)
         if gp then return end
 
@@ -197,46 +197,7 @@ function DebugScreen.bindToggle(self: DebugScreen)
     end)
 end
 
-local currentGame = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name or game.Name
-local currentVersion = game.PlaceVersion
-local latestVersion = game:GetService("InsertService"):GetLatestAssetVersionAsync(game.PlaceId)
-
-local function getPlayerPosString(): string
-    local plr = game:GetService('Players').LocalPlayer
-    local rootPart = plr.Character.HumanoidRootPart or plr.CharacterAdded:Wait().HumandoidRootPart
-
-    local pos = rootPart.Position
-
-    return string.format("XYZ: %.4f, %.4f, %.4f",pos.X,pos.Y,pos.Z)
-end
-
-local function getPlayerFacingDirectionString(): string
-    local plr = game:GetService('Players').LocalPlayer
-    local rootPart = plr.Character.HumanoidRootPart or plr.CharacterAdded:Wait().HumandoidRootPart
-
-    local lookV = rootPart.CFrame.LookVector
-    local flatLook = Vector3.new(lookV.X,0,lookV.Z).Unit
-
-    local directionTxt = "Unknown direction (maybe facing Y?)"
-
-    if math.abs(flatLook.X) > math.abs(flatLook.Z) then
-        if flatLook.X > 0 then
-            directionTxt = "east (Towards positive X)"
-        else
-            directionTxt = "west (Towards negative X)"
-        end
-    else
-        if flatLook.Z > 0 then
-            directionTxt = "south (Towards positive Z)"
-        else
-            directionTxt = "north (Towards negative Z)"
-        end
-    end
-
-    return string.format(`Facing: {directionTxt} (%.4f / %.4f)`,flatLook.X,flatLook.Z)
-end
-
-function DebugScreen.update(self: DebugScreen)
+function DebugServerInfo.update(self: DebugServerInfo)
     local _info = Core.info()
 
     local info = {
@@ -245,65 +206,41 @@ function DebugScreen.update(self: DebugScreen)
         network = _info.getNetworkInfoFull()
     }
 
-    local fps = math.floor(info.render.renderFps)
-    local physFps = math.floor(info.render.physicsFps)
-    local mem = math.floor(info.memory:totalMb())
-    local ipAddr = sharedv['server/ip']
+    --[[
+        :set('server/ip',info.ip)
+        :set('server/location',info.location)
+        :set('server/hostname',info.hostname)
+        :set('server/isp',info.isp)
+        :set('server/city',info.city)
+        :set('server/country',info.country)
+        :set('server/countryCode',info.countryCode)
+        :set('server/type',getServerType())
+    --]]
+
+    local ip = sharedv['server/ip']
     local location = sharedv['server/location']
-    local tx, rx = math.floor(info.network.tx), math.floor(info.network.rx)
+    local hostname = sharedv['server/hostname']
+    local isp = sharedv['server/isp']
+    local city = sharedv['server/city']
+    local country = sharedv['server/country']
+    local countryCode = sharedv['server/countryCode']
+    local serverType = sharedv['server/type']
 
-    local qualityLvl = UserSettings():GetService('UserGameSettings').SavedQualityLevel
-    local gpuFt = string.format("%.4f",info.render.renderGpuFrameTime)
-    local cpuFt = string.format("%.4f",info.render.renderCpuFrameTime)
-
-    local serverT = sharedv['server/type']
-    local playerCount = sharedv['game/playerCount']
-
-    local jobId = game.JobId
-
-
-    local plr = game:GetService('Players').LocalPlayer
-    local ping = math.floor((game:GetService('Players').LocalPlayer:GetNetworkPing() * 1000))
-
-    local function getS(tag: Enum.DeveloperMemoryTag)
-        return Stats:GetMemoryUsageMbForTag(tag)
-    end
-
-    local heap = math.floor(getS(Enum.DeveloperMemoryTag.LuaHeap))
-    local internal = math.floor(getS(Enum.DeveloperMemoryTag.Internal))
-    local scripts = math.floor(getS(Enum.DeveloperMemoryTag.Script))
-    local signal = math.floor(getS(Enum.DeveloperMemoryTag.Signals))
-    local instances = math.floor(getS(Enum.DeveloperMemoryTag.Instances))
-    local gui = math.floor(getS(Enum.DeveloperMemoryTag.Gui))
-
-
-    local physStep = string.format(`%.4f`,info.render.physStepTime)
+    self.drawables[1]:setText(`Server information from SharedVars:`)
+    self.drawables[2]:setText(`     server/ip: {ip}`)
+    self.drawables[3]:setText(`     server/location: {location}`)
+    self.drawables[4]:setText(`     server/hostname: {hostname}`)
+    self.drawables[5]:setText(`     server/isp: {isp}`)
+    self.drawables[6]:setText(`     server/city: {city}`)
+    self.drawables[7]:setText(`     server/country: {country}`)
+    self.drawables[8]:setText(`     server/countryCode: {countryCode}`)
+    self.drawables[9]:setText(`     server/type: {serverType}`)
 
     --left side updates
         -- selene: allow(undefined_variable)
-    self.drawables[1]:setText(`{currentGame} J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
-    self.drawables[2]:setText(`{mem}MB Total Mem, Lua heap: {heap}MB, Instances: {instances}MB, Signals: {signal}MB, Internal: {internal}MB Scripts: {scripts}, Gui: {gui}MB`)
-    self.drawables[3]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
-    self.drawables[4]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
-    self.drawables[5]:setText(` `)
-
-    -- render info
-    self.drawables[6]:setText(`Instances: {info.render.instanceCount}, Contacts: {info.render.contactsCount}`)
-    self.drawables[7]:setText(`Physics: {math.floor(physFps)} fps, {info.network.phys.tx} kb/s tx, {info.network.phys.rx} kb/s rx, step: {physStep} ms`)
-    self.drawables[8]:setText(`Primitives count: {info.render.primitivesCount} Moving primitives count: {info.render.movingPrimitivesCount}`)
-    self.drawables[9]:setText(`2D triangle count: {info.render.UI2D.triangleCount}, 2D drawcall count: {info.render.UI2D.drawcallCount}`)
-    self.drawables[10]:setText(`3D triangle count: {info.render.UI3D.triangleCount}, 3D drawcall count: {info.render.UI3D.drawcallCount}`)
-    self.drawables[11]:setText(`scene triangle count: {info.render.scene.triangleCount}, scene drawcall count: {info.render.scene.drawcallCount}`)
-    self.drawables[12]:setText(`shadows triangle count: {info.render.shadows.triangleCount}, shadows drawcall count: {info.render.shadows.drawcallCount}`)
-    self.drawables[13]:setText(` `)
-
-    --client
-    self.drawables[14]:setText(`Client: {plr.DisplayName} (@{plr.Name}) UserId={plr.UserId}`)
-    self.drawables[15]:setText(getPlayerPosString())
-    self.drawables[16]:setText(getPlayerFacingDirectionString())
 end
 
-function DebugScreen.show(self: DebugScreen)
+function DebugServerInfo.show(self: DebugServerInfo)
     if self.enabled then return end
     screenShared.generalEnabled = true
     self.enabled = true
@@ -316,7 +253,7 @@ function DebugScreen.show(self: DebugScreen)
     end)
 end
 
-function DebugScreen.hide(self: DebugScreen)
+function DebugServerInfo.hide(self: DebugServerInfo)
     if not self.enabled then return end
     screenShared.generalEnabled = false
     self.enabled = false
@@ -336,7 +273,7 @@ function DebugScreen.hide(self: DebugScreen)
     self.drawablesRight = {}
 end
 
-function DebugScreen.toggle(self: DebugScreen)
+function DebugServerInfo.toggle(self: DebugServerInfo)
     if self.enabled then
         self:hide()
     else
@@ -344,4 +281,4 @@ function DebugScreen.toggle(self: DebugScreen)
     end
 end
 
-return DebugScreen
+return DebugServerInfo

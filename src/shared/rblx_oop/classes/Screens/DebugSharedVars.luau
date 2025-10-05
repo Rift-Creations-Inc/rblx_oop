@@ -10,33 +10,6 @@ local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 
-local _TAG = Enum.DeveloperMemoryTag 
-local memoryTags: { Enum.DeveloperMemoryTag } = {
-    _TAG.Internal,
-    _TAG.HttpCache,
-    _TAG.Instances,
-    _TAG.Signals,
-    _TAG.LuaHeap,
-    _TAG.Script,
-    _TAG.PhysicsCollision,
-    _TAG.BaseParts,
-    _TAG.GraphicsSolidModels,
-    _TAG.GraphicsMeshParts,
-    _TAG.GraphicsParticles,
-    _TAG.GraphicsParts,
-    _TAG.GraphicsSpatialHash,
-    _TAG.GraphicsTerrain,
-    _TAG.GraphicsTexture,
-    _TAG.GraphicsTextureCharacter,
-    _TAG.Sounds,
-    _TAG.StreamingSounds,
-    _TAG.TerrainVoxels,
-    _TAG.Gui,
-    _TAG.Animation,
-    _TAG.Navigation,
-    _TAG.GeometryCSG,
-    _TAG.GraphicsSlimModels
-}
 
 print(`waiting on SharedVars...`)
 SharedVars.waitForLoad()
@@ -44,7 +17,7 @@ SharedVars.waitForLoad()
 local sharedv = {}
 SharedVars.bind(sharedv)
 
-export type MemoryScreen = {
+export type DebugSharedVars = {
     enabled: boolean,
     
     drawables: { Text.Text },
@@ -59,57 +32,57 @@ export type MemoryScreen = {
     containerRight: Frame?,
 
     restoreOriginal: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     setupDrawables: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     setupRightDrawables: (
-        self: MemoryScreen,
+        self: DebugSharedVars,
         fontColor: Color3
     ) -> (),
 
     setupLeftDrawables: (
-        self: MemoryScreen,
+        self: DebugSharedVars,
         fontColor: Color3
     ) -> (),
 
     bindToggle: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     update: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     show: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     hide: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> (),
 
     toggle: (
-        self: MemoryScreen
+        self: DebugSharedVars
     ) -> ()
 }
 
-local MemoryScreen = {}
-MemoryScreen.__index = MemoryScreen
+local DebugSharedVars = {}
+DebugSharedVars.__index = DebugSharedVars
 
-local SCREEN_LABEL = `Debug screen: Memory {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: SharedVars {screenShared.HELP}`
 
-function MemoryScreen.new(): MemoryScreen
-    local self: MemoryScreen = setmetatable({}, MemoryScreen)
+function DebugSharedVars.new(): DebugSharedVars
+    local self: DebugSharedVars = setmetatable({}, DebugSharedVars)
     self.enabled = false
     self.drawables = {}
     self.drawablesRight = {}
-    self.graphics = Graphics2D.new("DebugHUD:MemoryScreen")
+    self.graphics = Graphics2D.new("DebugHUD:DebugSharedVars")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F5
+    self.toggleKey = Enum.KeyCode.F8
 
     --self:bindToggle()
     self:hide()
@@ -117,7 +90,7 @@ function MemoryScreen.new(): MemoryScreen
     return self
 end
 
-function MemoryScreen.setupDrawables(self: MemoryScreen)
+function DebugSharedVars.setupDrawables(self: DebugSharedVars)
     local fontColor = Color3.fromRGB(255, 255, 255)
 
     local wrapper = Instance.new('Frame')
@@ -180,7 +153,7 @@ function MemoryScreen.setupDrawables(self: MemoryScreen)
     --self:setupRightDrawables(fontColor)
 end
 
-function MemoryScreen.bindToggle(self: MemoryScreen)
+function DebugSharedVars.bindToggle(self: DebugSharedVars)
     UserInputService.InputBegan:Connect(function(inp,gp)
         if gp then return end
 
@@ -190,40 +163,35 @@ function MemoryScreen.bindToggle(self: MemoryScreen)
     end)
 end
 
-function MemoryScreen.update(self: MemoryScreen)
+function DebugSharedVars.update(self: DebugSharedVars)
     if not self.containerLeft then return end
 
-    local totalMem = Stats:GetTotalMemoryUsageMb()
-    local perLine = 2
     local lines = {}
+    table.insert(lines,"===== SharedVars =====")
 
-    table.insert(lines,string.format("Total memory: %.2f MB", totalMem))
+    local lineGroup = {}
+    local count = 0
 
-    -- Group memory tags into lines
-    for i = 1, #memoryTags, perLine do
-        local lineTags = {}
-        for j = 0, perLine - 1 do
-            local idx = i + j
-            if memoryTags[idx] then
-                local tag = memoryTags[idx]
-                local memMb = Stats:GetMemoryUsageMbForTag(tag)
-                local percent = totalMem > 0 and (memMb / totalMem * 100) or 0
-
-                local color: Color3
-                if percent > 20 then
-                    color = Color3.fromRGB(233, 118, 118)
-                elseif percent > 10 then
-                    color = Color3.fromRGB(255, 154, 87)
-                else
-                    color = Color3.fromRGB(119, 255, 92)
-                end
-                local hexColor = color:ToHex()
-
-                table.insert(lineTags, string.format("%-25s <font color='#%s'>%06.2f MB (%06.2f%%)</font>", tostring(tag.Name), hexColor, memMb,percent))
-            end
+    for k,v in pairs(sharedv) do
+        local valueStr
+        if type(v) == "string" then
+            valueStr = `"{v}"`
+        else
+            valueStr = tostring(v)
         end
 
-        table.insert(lines, table.concat(lineTags, " | ")) -- separate with |
+        table.insert(lineGroup, `({type(v)}) {k}={valueStr}`)
+        count += 1
+
+        if count % 3 == 0 then
+            table.insert(lines, table.concat(lineGroup, " | "))
+            lineGroup = {}
+        end
+    end
+
+    -- Insert any remaining items
+    if #lineGroup > 0 then
+        table.insert(lines, table.concat(lineGroup, " | "))
     end
 
     for i, lineText in ipairs(lines) do
@@ -241,7 +209,7 @@ function MemoryScreen.update(self: MemoryScreen)
     end
 end
 
-function MemoryScreen.show(self: MemoryScreen)
+function DebugSharedVars.show(self: DebugSharedVars)
     if self.enabled then return end
     self.enabled = true
     screenShared.memoryEnabled = true
@@ -254,7 +222,7 @@ function MemoryScreen.show(self: MemoryScreen)
     end)
 end
 
-function MemoryScreen.hide(self: MemoryScreen)
+function DebugSharedVars.hide(self: DebugSharedVars)
     if not self.enabled then return end
     self.enabled = false
     screenShared.memoryEnabled = false
@@ -275,7 +243,7 @@ function MemoryScreen.hide(self: MemoryScreen)
     self.drawablesRight = {}
 end
 
-function MemoryScreen.toggle(self: MemoryScreen)
+function DebugSharedVars.toggle(self: DebugSharedVars)
     if self.enabled then
         self:hide()
     else
@@ -283,4 +251,4 @@ function MemoryScreen.toggle(self: MemoryScreen)
     end
 end
 
-return MemoryScreen
+return DebugSharedVars

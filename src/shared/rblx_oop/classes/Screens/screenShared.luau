@@ -1,5 +1,5 @@
 return {
-    HELP = "(f2: Minimal information | f5: General Debug Information | f6: Memory)",
+    HELP = "( F2: Minimal | F4: General | F5: Memory | F6: Server | F8: SharedVars )",
 
     memoryEnabled = false,
     generalEnabled = false

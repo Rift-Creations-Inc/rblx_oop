@@ -5,6 +5,8 @@ local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).init()
 local DebugMaster = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugMaster)
 local DebugMinimal = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugMinimal)
 local DebugScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugScreen)
+local DebugServerInfo = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugServerInfo)
+local DebugSharedVars = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugSharedVars)
 local MemoryScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.MemoryScreen)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
@@ -31,7 +33,7 @@ local ClientMainScript = playerScripts:WaitForChild("Client"):WaitForChild("Clie
 
 -- Wait for SharedVars before running ClientMain
 SharedVars.onReady(function()
-    write("SharedVars ready, running client main")
+    write("SharedVars ready, running client main...")
 
     local ClientMain = require(ClientMainScript)
     ClientMain:Main()
@@ -40,6 +42,8 @@ SharedVars.onReady(function()
     DebugMaster.registerScreen(DebugMinimal.new())
     DebugMaster.registerScreen(DebugScreen.new())
     DebugMaster.registerScreen(MemoryScreen.new())
+    DebugMaster.registerScreen(DebugServerInfo.new())
+    DebugMaster.registerScreen(DebugSharedVars.new())
     DebugMaster.start()
 
     -- Listen to updates

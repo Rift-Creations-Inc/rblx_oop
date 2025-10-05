@@ -161,7 +161,11 @@ if RunService:IsServer() then
 
 	local Players = game:GetService('Players')
 	Players.PlayerAdded:Connect(function(plr)
+		SharedVars:set(`game/playerCount`,#Players:GetChildren())
 		SharedVarsEvent:FireClient(plr,_vars)
+	end)
+	Players.PlayerRemoving:Connect(function(plr)
+		SharedVars:set(`game/playerCount`,#Players:GetChildren())
 	end)
 end
 
