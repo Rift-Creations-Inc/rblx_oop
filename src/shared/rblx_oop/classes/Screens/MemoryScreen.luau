@@ -219,7 +219,7 @@ function MemoryScreen.update(self: MemoryScreen)
                 end
                 local hexColor = color:ToHex()
 
-                table.insert(lineTags, string.format("%-25s: <font color='#%s'>%06.2f MB (%06.2f%%)</font>", tostring(tag.Name), hexColor, memMb,percent))
+                table.insert(lineTags, string.format("%-25s <font color='#%s'>%06.2f MB (%06.2f%%)</font>", tostring(tag.Name), hexColor, memMb,percent))
             end
         end
 
