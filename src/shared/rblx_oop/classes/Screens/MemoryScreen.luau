@@ -12,7 +12,7 @@ local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 
 local _TAG = Enum.DeveloperMemoryTag 
 local memoryTags: { Enum.DeveloperMemoryTag } = {
-    _TAG.Instances,
+    _TAG.Internal,
     _TAG.HttpCache,
     _TAG.Instances,
     _TAG.Signals,
@@ -100,14 +100,14 @@ export type MemoryScreen = {
 local MemoryScreen = {}
 MemoryScreen.__index = MemoryScreen
 
-local SCREEN_LABEL = `Screen: Memory {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: Memory {screenShared.HELP}`
 
 function MemoryScreen.new(): MemoryScreen
     local self: MemoryScreen = setmetatable({}, MemoryScreen)
     self.enabled = false
     self.drawables = {}
     self.drawablesRight = {}
-    self.graphics = Graphics2D.new("DebugHUD")
+    self.graphics = Graphics2D.new("DebugHUD:MemoryScreen")
     self.updateConn = nil
     self.toggleKey = Enum.KeyCode.F6
 
@@ -193,8 +193,11 @@ end
 function MemoryScreen.update(self: MemoryScreen)
     if not self.containerLeft then return end
 
-    local perLine = 3
+    local totalMem = Stats:GetTotalMemoryUsageMb()
+    local perLine = 2
     local lines = {}
+
+    table.insert(lines,string.format("Total memory: %.2f MB", totalMem))
 
     -- Group memory tags into lines
     for i = 1, #memoryTags, perLine do
@@ -204,23 +207,35 @@ function MemoryScreen.update(self: MemoryScreen)
             if memoryTags[idx] then
                 local tag = memoryTags[idx]
                 local memMb = Stats:GetMemoryUsageMbForTag(tag)
-                table.insert(lineTags, string.format("%s: %.2f MB", tostring(tag.Name), memMb))
+                local percent = totalMem > 0 and (memMb / totalMem * 100) or 0
+
+                local color: Color3
+                if percent > 20 then
+                    color = Color3.fromRGB(233, 118, 118)
+                elseif percent > 10 then
+                    color = Color3.fromRGB(255, 154, 87)
+                else
+                    color = Color3.fromRGB(119, 255, 92)
+                end
+                local hexColor = color:ToHex()
+
+                table.insert(lineTags, string.format("%-25s: <font color='#%s'>%06.2f MB (%06.2f%%)</font>", tostring(tag.Name), hexColor, memMb,percent))
             end
         end
+
         table.insert(lines, table.concat(lineTags, " | ")) -- separate with |
     end
 
-    -- Update or create drawables
     for i, lineText in ipairs(lines) do
         local drawable = self.drawables[i]
         if not drawable then
             drawable = Text.new({
                 text = "",
                 color = Color3.fromRGB(255,255,255),
-                font = Enum.Font.Code
+                richText = true
             })
-            self.graphics:addDrawable(drawable, self.containerLeft)
-            table.insert(self.drawables, drawable)
+            self.graphics:addDrawable(drawable,self.containerLeft)
+            table.insert(self.drawables,drawable)
         end
         drawable:setText(lineText)
     end

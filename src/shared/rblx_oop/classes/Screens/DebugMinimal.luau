@@ -74,14 +74,14 @@ export type DebugMinimal = {
 local DebugMinimal = {}
 DebugMinimal.__index = DebugMinimal
 
-local SCREEN_LABEL = `Screen: Minimal information {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: Minimal information {screenShared.HELP}`
 
 function DebugMinimal.new(): DebugMinimal
     local self: DebugMinimal = setmetatable({}, DebugMinimal)
     self.enabled = false
     self.drawables = {}
     self.drawablesRight = {}
-    self.graphics = Graphics2D.new("DebugHUD")
+    self.graphics = Graphics2D.new("DebugHUD:DebugMinimal")
     self.updateConn = nil
     self.toggleKey = Enum.KeyCode.F2
 
@@ -254,7 +254,6 @@ function DebugMinimal.update(self: DebugMinimal)
     local gpuFt = string.format("%.4f",info.render.renderGpuFrameTime)
     local cpuFt = string.format("%.4f",info.render.renderCpuFrameTime)
 
-    print(HttpService:JSONEncode(sharedv))
     local serverT = sharedv['server/type']
 
 

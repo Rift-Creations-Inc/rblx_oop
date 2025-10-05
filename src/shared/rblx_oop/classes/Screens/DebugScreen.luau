@@ -74,14 +74,14 @@ export type DebugScreen = {
 local DebugScreen = {}
 DebugScreen.__index = DebugScreen
 
-local SCREEN_LABEL = `Screen: General Debug Information {screenShared.HELP}`
+local SCREEN_LABEL = `Debug screen: General Debug Information {screenShared.HELP}`
 
 function DebugScreen.new(): DebugScreen
     local self: DebugScreen = setmetatable({}, DebugScreen)
     self.enabled = false
     self.drawables = {}
     self.drawablesRight = {}
-    self.graphics = Graphics2D.new("DebugHUD")
+    self.graphics = Graphics2D.new("DebugHUD;DebugScreen")
     self.updateConn = nil
     self.toggleKey = Enum.KeyCode.F5
 

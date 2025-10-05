@@ -23,16 +23,6 @@ function ServerMain.onServerClosing()
     print(`[ServerMain.onServerClosing] the server is now closing, goodbye!`)
 end
 
---[[
-    ip: string,
-    location: string,
-    hostname: string,
-    isp: string,
-    city: string,
-    country: string,
-    countryCode: string,
-]]
-
 local function getServerType()
 	if game.PrivateServerId ~= "" then
 		if game.PrivateServerOwnerId ~= 0 then
@@ -50,6 +40,7 @@ function ServerMain:Main()
         :addEventListener("playerAdded",    ServerMain.onPlayerAdded)
         :addEventListener("playerRemoving", ServerMain.onPlayerRemoving)
         :addEventListener("serverClosing",  ServerMain.onServerClosing)
+    
     
     SharedVars.onChanged(function(k: string,v: any)
         print(`[SharedVars.onChanged] {k} == {tostring(v)}`)

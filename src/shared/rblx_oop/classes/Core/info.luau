@@ -56,6 +56,9 @@ export type RenderInfo = {
     qualityLevel: Enum.SavedQualitySetting,
 }
 
+--[[
+    Formatted according to the json response from myip.wtf
+--]]
 type RawServerInfo = {
     YourFuckingIPAddress: string,
     YourFuckingLocation: string,

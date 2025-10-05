@@ -16,6 +16,7 @@ export type TextOptions = DrawableOptions & {
     color: Color3?,
     backgroundColor: Color3?,
     backgroundTransparency: number?,
+    richText: boolean,
     size: number?,
     font: Enum.Font?
 }
@@ -25,6 +26,7 @@ export type Text = Drawable & {
     color: Color3,
     backgroundColor: Color3,
     backgroundTransparency: number,
+    richText: boolean,
     size: number,
     font: Enum.Font,
 
@@ -50,7 +52,8 @@ Text.__index = Text
 setmetatable(Text, { __index = Drawable })
 
 function Text.setText(self: Text,txt: string)
-    dbg(`changing Text, text="{txt}" (id={self.id})`)
+    -- this makes the output really ugly, disable it
+    --dbg(`changing Text, text="{txt}" (id={self.id})`)
     self.text = txt
     
     if self._instance then
@@ -63,12 +66,14 @@ function Text.new(options: TextOptions?): Text
     setmetatable(self, Text)
     
     self.text = options and options.text or ""
+    self.richText = options and options.richText or false
     self.color = options and options.color or Color3.new(1,1,1)
     self.backgroundColor = options and options.backgroundColor or Color3.new(0.286275, 0.286275, 0.286275)
     self.backgroundTransparency = options and options.backgroundTransparency or 0.5
     self.size = options and options.size or 18
     self.font = options and options.font or Enum.Font.Code
 
+    -- silence this cause it's get messy
     dbg(`new Text, text="{options.text}" (id={self.id})`)
 
     return self
@@ -82,7 +87,7 @@ function Text.render(self: Text,parent: Instance): TextLabel
     label.TextColor3 = self.color
     label.Font = self.font
     label.TextSize = self.size
-    label.RichText = true
+    label.RichText = self.richText
     label.BackgroundColor3 = self.backgroundColor
     label.BackgroundTransparency = self.backgroundTransparency
     label.TextXAlignment = Enum.TextXAlignment.Left
