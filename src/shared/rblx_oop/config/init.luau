@@ -19,6 +19,7 @@ local Server = {
 }
 
 local Global = {
+    doCoreDumps = true,
     debugCoreClass = true,
 }
 

@@ -41,7 +41,7 @@ function Drawable.new(options: DrawableOptions?): Drawable
     self.position = options and options.pos or Vector2.new(0,0)
     self.anchor = options and options.pos or Vector2.new(0,0)
     self._instance = nil
-    self.id = math.random(1,100)
+    self.id = math.random(50000)
 
     dbg(`created new Drawable... (id={self.id})`)
 

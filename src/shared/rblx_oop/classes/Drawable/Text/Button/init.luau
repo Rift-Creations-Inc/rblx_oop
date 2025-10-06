@@ -2,7 +2,7 @@ local config = require(game:GetService("ReplicatedStorage").Shared.rblx_oop.conf
 
 local function dbg(txt: string)
 	if not config.client.debugGraphics then return end
-	print(`[Drawable.Text.Button] {txt}`)
+	print(`[Button] {txt}`)
 end
 
 local Drawable = require(script.Parent.Parent)

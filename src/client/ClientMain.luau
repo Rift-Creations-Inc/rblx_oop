@@ -26,15 +26,23 @@ function ClientMain.gameSettingChanged(name)
     end
 end
 
-function ClientMain:CreditsUi()
+function ClientMain:Time()
     local creditsUi = Text.new({
-        text = `created by 4visetAir1 :D`,
+        text = `idk`,
         pos = Vector2.new(1,1),
         size = 18,
         textXalign = Enum.TextXAlignment.Right
     })
 
     ClientMain.GFX:addDrawable(creditsUi)
+
+    task.spawn(function()
+        while true do
+            creditsUi:setText(`the current time is {DateTime.now():ToIsoDate()} (ISO 8601)`)
+            task.wait(1)
+        end
+    end)
+
 end
 
 function ClientMain:CreateTitle()
@@ -74,9 +82,19 @@ end
 
 function ClientMain:debugButtons()
     local function DUMP_CONFIGURATION()
+        Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press f9 to view.",8)
         print(`[DUMP_CONFIGURATION] as JSON: {HttpService:JSONEncode(config)}`)
         print("[DUMP_CONFIGURATION] as table: ",config)
-        Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press f9 to view.",8)
+    end
+
+    local function DUMP_CORE()
+        print(`[DUMP_CORE] telling core to generate a dump...`)
+        local DUMP = Core:generateDump()
+        print(`[DUMP_CORE] dump generated, guid is {DUMP.dumpGuid}`)
+
+        Notification.new("LOW",`core dump has been generated\nand dumped to console. dump guid is\n{DUMP.dumpGuid}.press f9 to view the console.`)
+        print(`[DUMP_CORE] as JSON: {HttpService:JSONEncode(DUMP)}`)
+        print(`[DUMP_CORE] as table: `,DUMP)
     end
 
     local printConfBttn = Button.new({
@@ -86,6 +104,17 @@ function ClientMain:debugButtons()
         backgroundColor = Color3.fromRGB(0,0,0),
         size = 18
     })
+
+
+    local generateCoreDumpBttn = Button.new({
+        pos = Vector2.new(.85,.25),
+        text = "generate core dump and write it to the console",
+        onClick = DUMP_CORE,
+        backgroundColor = Color3.fromRGB(0,0,0),
+        size = 18 
+    })
+
+    ClientMain.GFX:addDrawable(generateCoreDumpBttn)
     ClientMain.GFX:addDrawable(printConfBttn)
 end
 
@@ -98,7 +127,7 @@ function ClientMain:Main()
 
     ClientMain:debugButtons()
     ClientMain:CreateTitle()
-    ClientMain:CreditsUi()
+    ClientMain:Time()
     ClientMain:SayHi()
     return
 end

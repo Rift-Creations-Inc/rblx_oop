@@ -1,4 +1,6 @@
 
+local HttpService = game:GetService("HttpService")
+local LogService = game:GetService("LogService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 local rCore = require(ReplicatedStorage.Shared.rblx_oop.classes.Core)
@@ -19,18 +21,44 @@ function ServerMain.onPlayerRemoving(plr: Player)
     print(`[ServerMain.onPlayerRemoving] {plr.Name} is leaving!`)
 end
 
-function ServerMain.onServerClosing()
-    print(`[ServerMain.onServerClosing] the server is now closing, goodbye!`)
+local function DUMP_CORE_BEFORE_SHUTDOWN()
+    print(`[DUMP_CORE_BEFORE_SHUTDOWN] telling core to generate a dump...`)
+    local DUMP = Core:generateDump()
+    print(`[DUMP_CORE_BEFORE_SHUTDOWN] dump generated, guid is {DUMP.dumpGuid}`)
+    print(`[DUMP_CORE_BEFORE_SHUTDOWN] as JSON: {HttpService:JSONEncode(DUMP)}`)
+    print(`[DUMP_CORE_BEFORE_SHUTDOWN] as table: `,DUMP)
 end
 
+function ServerMain.onServerClosing()
+    print(`[ServerMain.onServerClosing] begin server shutdown proceedure at {DateTime.now():ToIsoDate()}`)
+
+    -- dump core before we close...
+    print(`[ServerMain.onServerClosing] generated a dump before we leave cus why not :)`)
+    DUMP_CORE_BEFORE_SHUTDOWN()
+
+    print(`[ServerMain.onServerClosing] ***** SERVER GOING DOWN NOW *****`)
+end
+
+
 function ServerMain:Main()
-    Core:registerBridge("sendGlobalNotification")
+    Core:registerPipe("sendGlobalNotification")
+    Core:registerPipe("serverLogRelay")
+    
+    task.spawn(function()
+        LogService.MessageOut:Connect(function(msg: string, mtype: Enum.MessageType)
+            -- if we don't handle this we get extreme lag :d
+            if msg == "[Core/DEBUG] dispatched event: serverLogRelay" then return end
+            Core:dispatchEvent("serverLogRelay",msg,mtype)
+        end)
+    end)
 
     Core
         :addEventListener("playerAdded",    ServerMain.onPlayerAdded)
         :addEventListener("playerRemoving", ServerMain.onPlayerRemoving)
         :addEventListener("serverClosing",  ServerMain.onServerClosing)
     
+    print('dumping...')
+    task.wait(2)
 end
 
 return ServerMain

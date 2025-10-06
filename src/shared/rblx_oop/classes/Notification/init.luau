@@ -125,7 +125,7 @@ end
 
 -- if the server wants to send a notification
 Core
-    :registerBridge("sendGlobalNotification")
+    :registerPipe("sendGlobalNotification")
     :addEventListener("sendGlobalNotification", function(ntype: string, txt: string, timeR: number)
         Notification.new(ntype, txt, timeR,true)
     end)

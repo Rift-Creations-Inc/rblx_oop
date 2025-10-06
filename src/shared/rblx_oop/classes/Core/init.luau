@@ -7,6 +7,7 @@
 --]]
 
 
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AlreadyInitializedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.AlreadyInitializedException)
 local AlreadyCreatedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.AlreadyCreatedException)
@@ -15,6 +16,9 @@ local UninitializedObjectException = require(ReplicatedStorage.Shared.rblx_oop.c
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 local Info = require(script.info)
 local RunService = game:GetService("RunService")
+local dump = require(ReplicatedStorage.Shared.rblx_oop.runtime.core.dump)
+
+
 
 type Info = Info.Info
 
@@ -34,6 +38,7 @@ type MappedString<V> = { [string]: V }
 type EventMapping = MappedString<RBXScriptSignal>
 type ConnectionMapping = MappedString<{ RBXScriptConnection }>
 type ListenerMapping = MappedString<{ (...any) -> () }>
+type PipeMapping = MappedString<RemoteEvent>
 
 export type Core = {
     initialized: boolean,
@@ -42,6 +47,7 @@ export type Core = {
     _events: EventMapping,
     _connections: ConnectionMapping,
     _listeners: ListenerMapping,
+    _pipes: PipeMapping,
 
     init: (
         self: Core
@@ -78,7 +84,7 @@ export type Core = {
         event: string
     ) -> Core,
 
-    registerBridge: (
+    registerPipe: (
         self: Core,
         name: string
     ) -> Core,
@@ -87,6 +93,10 @@ export type Core = {
         self: Core,
         name: string
     ) -> Core,
+
+    generateDump: (
+        self: Core
+    ) -> dump.CoreDump,
 
     --[[ @EndSection Events ]]
 
@@ -103,11 +113,12 @@ local _singleton: Core = {}
 local g_events: EventMapping = {}
 local g_connections: ConnectionMapping = {}
 local g_listeners: ListenerMapping = {}
+local g_pipes: PipeMapping = {}
 
 local Core = {}
 Core.__index = Core
 
-local CoreEventBridge: RemoteEvent = nil
+local CoreEventPipe: RemoteEvent = nil
 
 
 local function checkIfInit()
@@ -152,6 +163,56 @@ local function registerDefaults(core: Core)
     end
 end
 
+local function LENGTH(t: { [any]: any})
+    local index = 0
+
+    for i, _ in t do
+        index += 1
+    end
+
+    return index
+end
+
+function Core.generateDump(self: Core): dump.CoreDump
+    dbg(`[!] a dump was just requested...`)
+    
+    if not config.global.doCoreDumps then
+        warn("config.global.doCoreDumps has prohibitted core dumps!")
+        warn("  returning the 'nil' dump...")
+        return dump.dumps["{00000000-0000-0000-0000-000000000000}"]
+    end
+
+    local GUID = HttpService:GenerateGUID(true)
+    local TIME = DateTime.now():ToIsoDate()
+
+    -- put [!] in front cause dumps are kinda important
+    dbg(`[!] generating a dump at {TIME}... (guid={GUID})`)
+
+    local DUMP: dump.CoreDump = {
+        dumpGuid = GUID,
+        dumpTime = TIME,
+
+        pipesCreated = LENGTH(self._pipes),
+        pipes = self._pipes,
+
+        connectionsCreated = LENGTH(self._connections),
+        connections = self._connections,
+
+        eventsCreated = LENGTH(self._events),
+        events = self._events,
+
+        listenersCreated = LENGTH(self._listeners),
+        listeners = self._listeners
+
+    }
+
+    dbg(`[!] Saving this dump to the runtime dumps table...`)
+    table.insert(dump.dumps,DUMP)
+    dump.latestDumpGuid = GUID
+
+    return DUMP
+end
+
 function Core.get(): Core
     return _singleton
 end
@@ -161,21 +222,22 @@ function Core.init(): Core
         AlreadyInitializedException.new("Core is already initialized!")
         return
     end
-    CoreEventBridge = ReplicatedStorage.Shared.rblx_oop.runtime:FindFirstChild('CoreEventBridge') :: RemoteEvent?
-    if not CoreEventBridge then
+    CoreEventPipe = ReplicatedStorage.Shared.rblx_oop.runtime:FindFirstChild('CoreEventPipe') :: RemoteEvent?
+    if not CoreEventPipe then
         local bridge = Instance.new("RemoteEvent")
-        bridge.Name = "CoreEventBridge"
+        bridge.Name = "CoreEventPipe"
         bridge.Parent = ReplicatedStorage.Shared.rblx_oop.runtime
 
-        CoreEventBridge = bridge
-        dbg(`Created CoreEventBridge RemoteEvent...`)
+        CoreEventPipe = bridge
+        dbg(`Created CoreEventPipe RemoteEvent...`)
     end
 
     _singleton = setmetatable({
         initialized = true,
         _events = g_events :: EventMapping,
         _connections = g_connections :: ConnectionMapping,
-        _listeners = g_listeners :: ListenerMapping
+        _listeners = g_listeners :: ListenerMapping,
+        _pipes = g_pipes :: PipeMapping,
     }, Core)
 
     dbg("initialized Core singleton")
@@ -189,8 +251,8 @@ function Core.init(): Core
         return _singleton
     end
 
-    if CoreEventBridge then
-        CoreEventBridge.OnClientEvent:Connect(function(ev: string, ...)
+    if CoreEventPipe then
+        CoreEventPipe.OnClientEvent:Connect(function(ev: string, ...)
             local listeners = _singleton._listeners[ev]
             if listeners then
                 for _, fn in ipairs(listeners) do
@@ -210,13 +272,13 @@ function Core.init(): Core
     return _singleton
 end
 
-function Core.registerBridge(self: Core, name: string)
-    local remote: RemoteEvent = ReplicatedStorage.Shared.rblx_oop.runtime:FindFirstChild(name)
+function Core.registerPipe(self: Core, name: string)
+    local remote: RemoteEvent = ReplicatedStorage.Shared.rblx_oop.runtime.core.pipes:FindFirstChild(`pipe_{name}`)
 
     if not remote then
         remote = Instance.new("RemoteEvent")
-        remote.Name = `bridge/{name}`
-        remote.Parent = ReplicatedStorage.Shared.rblx_oop.runtime.core
+        remote.Name = `pipe_{name}`
+        remote.Parent = ReplicatedStorage.Shared.rblx_oop.runtime.core.pipes
     end
 
     if RunService:IsServer() then
@@ -225,6 +287,7 @@ function Core.registerBridge(self: Core, name: string)
         self:registerEvent(name, remote.OnClientEvent)
     end
 
+    self._pipes[name] = remote
     return self
 end
 
@@ -325,8 +388,8 @@ function Core.dispatchEvent(self: Core,event: string, ...): Core
         end,...)
     end
 
-    if RunService:IsServer() and CoreEventBridge then
-        CoreEventBridge:FireAllClients(event,...)
+    if RunService:IsServer() and CoreEventPipe then
+        CoreEventPipe:FireAllClients(event,...)
     end
 
     dbg(`dispatched event: {event}`)
