@@ -42,7 +42,6 @@ function ClientMain:CreateTitle()
         backgroundColor = Color3.new(0,0,0),
         backgroundTransparency = 0
     })
-
     ClientMain.GFXTitle:addDrawable(title)
 end
 
@@ -60,7 +59,7 @@ function ClientMain:SayHi()
     helloText:setText(`This game serves as a test of rblx_oop,`)
     task.wait(3)
     helloText:setText("rblx_oop is inspired by Java but it's for Luau and Roblox! (The text you're seeing right now is created by rblx_oop!)")
-    task.wait(5.5)
+    task.wait(4.2)
     helloText:setText(`That's all I have to say.`)
     task.wait(2)
     helloText:setText(`Enjoy this demo!`)

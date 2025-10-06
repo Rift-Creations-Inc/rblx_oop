@@ -45,56 +45,56 @@ local function _PRINT_CONFIGURATION()
     print(`[CONFIGURATION] {HttpService:JSONEncode(config)}`)
 end
 
+local function NOTIFICATION_IMPORTANT(TEXT,timeR)
+    task.spawn(function()
+        local notifGFX = Graphics2D.new(`temp:notif`)
+
+        local notifText = Text.new({
+            text = `[Important] ({timeR}s)\n{TEXT}`,
+            pos = Vector2.new(1,.85),
+            size = 20,
+            textXalign = Enum.TextXAlignment.Right,
+            color = Color3.fromRGB(255, 147, 5),
+        })
+        notifGFX:addDrawable(notifText)
+
+        while timeR > 0 do
+            task.wait(1)
+            timeR -= 1
+            notifText:setText(`[Important] ({timeR}s)\n{TEXT}`)
+        end
+
+        notifText:destroy()
+        notifGFX:destroy()
+    end)
+end
+
+local function NOTIFICATION_STD(TEXT,timeR)
+    task.spawn(function()
+        local notifGFX = Graphics2D.new(`temp:notif`)
+
+        local notifText = Text.new({
+            text = `[Standard] ({timeR}s)\n{TEXT}`,
+            pos = Vector2.new(1,.85),
+            size = 20,
+            textXalign = Enum.TextXAlignment.Right,
+            color = Color3.fromRGB(2, 183, 255),
+        })
+        notifGFX:addDrawable(notifText)
+
+        while timeR > 0 do
+            task.wait(1)
+            timeR -= 1
+            notifText:setText(`[Standard] ({timeR}s)\n{TEXT}`)
+        end
+
+        notifText:destroy()
+        notifGFX:destroy()
+    end)
+end
+
 -- Wait for SharedVars before running ClientMain
 SharedVars.onReady(function()
-    SharedVars.onChanged(function(k,v)
-        print(`{k}={tostring(v)}`)
-    end)
-    print(SharedVars.getAll())
-    
-    -- Register debug screens
-    DebugMaster.registerScreen(DebugMinimal.new())
-    DebugMaster.registerScreen(DebugScreen.new())
-    DebugMaster.registerScreen(MemoryScreen.new())
-    DebugMaster.registerScreen(DebugServerInfo.new())
-    DebugMaster.registerScreen(DebugSharedVars.new())
-    DebugMaster.start()
-
-    if screenShared.keyStyle == "studio" then
-        task.spawn(function()
-            local notifGFX = Graphics2D.new(`temp:notif`)
-
-            local timeR = 6
-
-            local TEXT = `\nYour debug key map is set to "studio"\nDebug keys may be different - press F2 to view keys.`
-            local notifText = Text.new({
-                text = `[Important] ({timeR}s)\nYour debug key map is set to "studio"\nDebug keys may be different - press F2 to view keys.`,
-                pos = Vector2.new(1,.85),
-                size = 18,
-                textXalign = Enum.TextXAlignment.Right,
-                color = Color3.fromRGB(255, 147, 5),
-            })
-
-            notifGFX:addDrawable(notifText)
-            while timeR > 0 do
-                task.wait(1)
-                timeR -= 1
-
-                notifText:setText(`[Important] ({timeR}s){TEXT}`)
-            end
-            notifText:destroy()
-            notifGFX:destroy()
-        end)
-    end
-    
-    -- Listen to updates
-    Core:addEventListener("sharedVarsUpdate", function(k,v)
-        write(`set {k}={tostring(v)}`)
-    end)
-
-    _PRINT_CONFIGURATION()
-
-    write(`spawnning a task to run client main so we don't halt the runner...`)
 
     if config.client.askToContinue then
         write(`waiting for user to tell us to continue, config.client.askToContinue=true`)
@@ -138,6 +138,33 @@ SharedVars.onReady(function()
         askToContinueGFX:destroy()
     end
 
+    SharedVars.onChanged(function(k,v)
+        print(`{k}={tostring(v)}`)
+    end)
+    
+    -- Register debug screens
+    DebugMaster.registerScreen(DebugMinimal.new())
+    DebugMaster.registerScreen(DebugScreen.new())
+    DebugMaster.registerScreen(MemoryScreen.new())
+    DebugMaster.registerScreen(DebugServerInfo.new())
+    DebugMaster.registerScreen(DebugSharedVars.new())
+    DebugMaster.start()
+
+    if screenShared.keyStyle == "studio" then
+        NOTIFICATION_IMPORTANT(`Your debug key map is set to "studio"\nDebug keys may be different - press F2 to view keys.`, 6)
+    else
+        NOTIFICATION_STD(`Your debug key map is set to "std."\nUsable keys: F1-F5.`, 5)
+    end
+    
+    -- Listen to updates
+    Core:addEventListener("sharedVarsUpdate", function(k,v)
+        write(`set {k}={tostring(v)}`)
+    end)
+
+    _PRINT_CONFIGURATION()
+    
+    write(`spawnning a task to run client main so we don't halt the runner...`)
+    
     task.spawn(function()
         local ClientMain = require(ClientMainScript)
         ClientMain:Main()
