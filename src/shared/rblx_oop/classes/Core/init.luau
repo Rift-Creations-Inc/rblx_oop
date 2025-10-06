@@ -77,6 +77,17 @@ export type Core = {
         self: Core,
         event: string
     ) -> Core,
+
+    registerBridge: (
+        self: Core,
+        name: string
+    ) -> Core,
+
+    unregisterBridge: (
+        self: Core,
+        name: string
+    ) -> Core,
+
     --[[ @EndSection Events ]]
 
     --[[ @BeginSection Info ]]
@@ -116,6 +127,7 @@ local function registerDefaults(core: Core)
     dbg("   game.Players.PlayerAdded            ==> playerAdded")
     dbg("   game.Players.PlayerRemoving         ==> playerRemoving")
     dbg("   UserSettings().GameSettings.Changed ==> clientGameSettings")
+
     core
         :registerEvent("playerAdded", Players.PlayerAdded)
         :registerEvent("playerRemoving", Players.PlayerRemoving)
@@ -196,6 +208,22 @@ function Core.init(): Core
 
 
     return _singleton
+end
+
+function Core.registerBridge(self: Core, name: string)
+    local remote: RemoteEvent = ReplicatedStorage.Shared.rblx_oop.runtime:FindFirstChild(name)
+
+    if not remote then
+        remote = Instance.new("RemoteEvent")
+        remote.Name = name
+        remote.Parent = ReplicatedStorage.Shared.rblx_oop.runtime
+    end
+
+    if RunService:IsServer() then
+        self:registerEvent(name, remote.OnServerEvent)
+    elseif RunService:IsClient() then
+        self:registerEvent(name, remote.OnClientEvent)
+    end
 end
 
 function Core.registerEvent(self: Core,name: string,signal: RBXScriptSignal): Core

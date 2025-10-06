@@ -10,6 +10,8 @@ local ServerMain = {}
 ServerMain.__index = ServerMain
 
 function ServerMain.onPlayerAdded(plr: Player)
+    -- local core = require(game.ReplicatedStorage.Shared.rblx_oop.classes.Core).init() core.get():dispatchEvent("sendGlobalNotification","LOW","hi",20,true)
+    Core:dispatchEvent("sendGlobalNotification","INFO",`{plr.Name} joined!`,6)
     print(`[ServerMain.onPlayerAdded] {plr.Name} has joined!`)
 end
 
@@ -22,6 +24,8 @@ function ServerMain.onServerClosing()
 end
 
 function ServerMain:Main()
+    Core:registerBridge("sendGlobalNotification")
+
     Core
         :addEventListener("playerAdded",    ServerMain.onPlayerAdded)
         :addEventListener("playerRemoving", ServerMain.onPlayerRemoving)

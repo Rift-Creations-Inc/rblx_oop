@@ -1,8 +1,13 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Core = require(script.Parent.Core).get()
 local Graphics2D = require(script.Parent.Graphics2D)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
+
+repeat
+    task.wait()
+until Core.initialized
 
 local function dbg(txt: string)
     print(`[Notification] {txt}`)
@@ -10,7 +15,7 @@ end
 
 --[[
     @StaticClass
-    ]]
+--]]
     
 local Notification = {}
 Notification.__index = Notification
@@ -18,29 +23,13 @@ Notification.__index = Notification
 local activeNotifs: { {text: Text.Text, height: number} } = {}
 local notifSpacing = 0.015
 
-local function tweenTo(textObj: Text.Text, newY: number)
-    --[[
-        local oldPos: UDim2 = self._instance.Position
-    local newPos: UDim2 = UDim2.fromScale(new.X, new.Y)
-    dbg(`changing Text positon {tostring(oldPos)} ==> {tostring(newPos)} (id={self.id})`)
-    self._instance.Position = newPos
-    ]]
-    local oldPos = textObj._instance.Position
-    local newPos = UDim2.fromScale(1, newY)
-
-    local inst = textObj._instance
-    if not inst then return end
-    game:GetService("TweenService"):Create(
-        inst,
-        TweenInfo.new(0.25,Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
-        { Position = newPos }
-    ):Play()
-
-    textObj:setPosition(newPos)
-end
-
 local function respositionNotifications()
     dbg(`respositioning Notifications...`)
+
+    if #activeNotifs == 0 then
+        dbg(`   no notification to reposition... bailing out`)
+        return
+    end
 
     local baseY = 0.85
     for i, data in ipairs(activeNotifs) do
@@ -57,10 +46,16 @@ local function respositionNotifications()
 end
 
 
-function Notification.createRawNotification(label: string, color: Color3,TEXT: string, timeR: number)
+function Notification.createRawNotification(label: string, color: Color3,TEXT: string, timeR: number,server: boolean?)
+    server = server or false
+
     local NOTIFICATION_NAME = `notification_{HttpService:GenerateGUID()}`
-    
-    dbg(`new Notification: name={NOTIFICATION_NAME}, label={label}, color={tostring(color)}, text={string}, timeR={tostring(timeR)}`)
+    dbg(`new Notification: name={NOTIFICATION_NAME}, label={label}, color=#{color:ToHex()}, text={TEXT}, timeR={tostring(timeR)}, server={tostring(server)}`)
+
+    if server then
+        local originalLabel = label
+        label = `SERVER {originalLabel}`
+    end
 
     task.spawn(function()
         local notifGFX = Graphics2D.new(NOTIFICATION_NAME)
@@ -110,24 +105,29 @@ function Notification.createRawNotification(label: string, color: Color3,TEXT: s
 end
 
 
-function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG" | "SERVER",text: string,timeR: number?)
+function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: string,timeR: number?,server: boolean?)
+    print("hey!")
     timeR = timeR or 5
 
     if ntype == "URGENT" then
-        Notification.createRawNotification("URGENT", Color3.fromRGB(255, 106, 106), text, timeR)
+        Notification.createRawNotification("URGENT", Color3.fromRGB(255, 106, 106), text, timeR,server)
     elseif ntype == "IMPORTANT" then
-        Notification.createRawNotification("IMPORTANT", Color3.fromRGB(255, 157, 66), text, timeR)
+        Notification.createRawNotification("IMPORTANT", Color3.fromRGB(255, 157, 66), text, timeR,server)
     elseif ntype == "LOW" then
-        Notification.createRawNotification("LOW", Color3.fromRGB(14, 187, 255), text, timeR)
+        Notification.createRawNotification("LOW", Color3.fromRGB(14, 187, 255), text, timeR,server)
     elseif ntype == "DEBUG" then
         if not config.client.debugNotifications then return end
-        Notification.createRawNotification("DEBUG", Color3.fromRGB(255, 255, 255), text, timeR)
-    elseif ntype == "SERVER" then
-        Notification.createRawNotification("SERVER", Color3.fromRGB(209, 60, 255), text, timeR)
+
+        Notification.createRawNotification("DEBUG", Color3.fromRGB(255, 255, 255), text, timeR,server)
     end
 end
 
 -- if the server wants to send a notification
-
+Core:registerBridge("sendGlobalNotification")
+Core:addEventListener("sendGlobalNotification", function(ntype: string, txt: string, timeR: number)
+    print(`ntype={ntype}, txt={txt}, timeR={timeR}`)
+    print(`calling Notification.new()`)
+    Notification.new(ntype, txt, timeR,true)
+end)
 
 return Notification

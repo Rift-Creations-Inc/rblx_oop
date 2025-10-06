@@ -1,16 +1,16 @@
-local HttpService = game:GetService("HttpService")
+-- prevents hanging from stuff that expects core to be initialized
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).init()
+
+local HttpService = game:GetService("HttpService")
 
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local Players = game:GetService("Players")
-local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
-local ErrorThrowerAndChecker = require(StarterPlayer.StarterPlayerScripts.Client["rblx_oop#INTERNAL"].Actor.ErrorThrowerAndChecker)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
-local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).init()
 local DebugMaster = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugMaster)
 local DebugMinimal = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugMinimal)
 local DebugScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugScreen)
@@ -18,7 +18,6 @@ local DebugServerInfo = require(ReplicatedStorage.Shared.rblx_oop.classes.Screen
 local DebugSharedVars = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugSharedVars)
 local MemoryScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.MemoryScreen)
 local screenShared = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.screenShared)
-local Thread = require(ReplicatedStorage.Shared.rblx_oop.classes.Thread)
 
 
 local function write(txt: string)
@@ -47,10 +46,6 @@ local function _PRINT_CONFIGURATION()
     write(`Printing configuration as json...`)
     print(`[CONFIGURATION] {HttpService:JSONEncode(config)}`)
 end
-
-local tmp =Thread.new("client/errorThrowerAndChecker")
-tmp.run = ErrorThrowerAndChecker._RUN
-tmp:start()
 
 -- Wait for SharedVars before running ClientMain
 SharedVars.onReady(function()
