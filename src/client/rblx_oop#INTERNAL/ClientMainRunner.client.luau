@@ -108,7 +108,7 @@ SharedVars.onReady(function()
         end
 
         local button = Button.new({
-            text = "click me or press [E]\nto continue loading (config.client.askToContinue)",
+            text = "Click me or press [E] to continue loading.\n\nYou are seeing this because config.client.askToContinue is set to true.",
             textXalign = Enum.TextXAlignment.Center,
             pos = Vector2.new(.5,.5),
             size = 18,
