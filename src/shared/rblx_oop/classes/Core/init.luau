@@ -215,8 +215,8 @@ function Core.registerBridge(self: Core, name: string)
 
     if not remote then
         remote = Instance.new("RemoteEvent")
-        remote.Name = name
-        remote.Parent = ReplicatedStorage.Shared.rblx_oop.runtime
+        remote.Name = `bridge/{name}`
+        remote.Parent = ReplicatedStorage.Shared.rblx_oop.runtime.core
     end
 
     if RunService:IsServer() then
