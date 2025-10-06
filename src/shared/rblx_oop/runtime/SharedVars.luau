@@ -9,7 +9,6 @@ repeat
 	task.wait()
 until Core.initialized
 
-print(`*** creating ***`)
 if Core and Core.initialized then
 	if not Core._events["sharedVarsUpdate"] then
 		local ev = Instance.new("BindableEvent")
@@ -164,6 +163,7 @@ if RunService:IsServer() then
 		SharedVars:set(`game/playerCount`,#Players:GetChildren())
 		SharedVarsEvent:FireClient(plr,_vars)
 	end)
+	
 	Players.PlayerRemoving:Connect(function(plr)
 		SharedVars:set(`game/playerCount`,#Players:GetChildren())
 	end)

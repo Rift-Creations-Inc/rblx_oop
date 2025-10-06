@@ -1,12 +1,12 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
-local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 
 local ClientMain = {
-    GFX = Graphics2D.new()
+    GFX = Graphics2D.new('ClientMain')
 }
 
 local gameSettings = UserSettings().GameSettings
@@ -22,48 +22,37 @@ function ClientMain.gameSettingChanged(name)
     end
 end
 
+function ClientMain:CreditsUi()
+    local creditsUi = Text.new({
+        text = `created by 4visetAir1 :D`,
+        pos = Vector2.new(1,1),
+        size = 18,
+        textXalign = Enum.TextXAlignment.Right
+    })
+
+    ClientMain.GFX:addDrawable(creditsUi)
+end
+
 function ClientMain:SayHi()
-   local helloText = Text.new({text = "hello!", pos = Vector2.new(.5,.2)})
-   
-   ClientMain.GFX:addDrawable(helloText)
-end
-
-local function _createFunnyText()
-    local text = Text.new({text = "funny!", pos = Vector2.new(.5,.5)})
-
-    ClientMain.GFX:addDrawable(text)
-end
-
-local function _clicked()
-    _createFunnyText()
-end
-
-local function _clear()
-    ClientMain.GFX:clear()
-end
-
-function ClientMain:FunnyButtonStuff()
-
-    local clearButton = Button.new({
-        text = "clear screen",
-        pos = Vector2.new(0.009,0.0875),
-        size = Vector2.new(.15,.15),
-        onClick = _clear
+    local plr = game:GetService("Players").LocalPlayer
+    local helloText = Text.new({
+        text = `Hello, {plr.DisplayName}!`,
+        pos = Vector2.new(.5,.95),
+        size = 25,
+        textXalign = Enum.TextXAlignment.Center
     })
 
-    local button = Button.new({
-        text = "click me!",
-        pos = Vector2.new(.5,.4),
-        size = Vector2.new(.2,.2),
-        onClick = _clicked,
-    })
-
-    ClientMain.GFX:addDrawable(clearButton)
-    ClientMain.GFX:addDrawable(button)
-end
-
-function ClientMain.pie()
-
+    ClientMain.GFX:addDrawable(helloText)
+    task.wait(2)
+    helloText:setText(`This game serves as a test of rblx_oop,`)
+    task.wait(3)
+    helloText:setText("rblx_oop is inspired by Java but it's for Luau and Roblox! (The text you're seeing right now is created by rblx_oop!)")
+    task.wait(5.5)
+    helloText:setText(`That's all I have to say.`)
+    task.wait(2)
+    helloText:setText(`Enjoy this demo!`)
+    task.wait(2)
+    helloText:destroy()
 end
 
 function ClientMain:Main()
@@ -73,6 +62,8 @@ function ClientMain:Main()
     
     Core:addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
+    ClientMain:CreditsUi()
+    ClientMain:SayHi()
     return
 end
 

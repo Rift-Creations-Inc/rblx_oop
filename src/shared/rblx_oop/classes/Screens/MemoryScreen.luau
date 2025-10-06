@@ -36,7 +36,6 @@ local memoryTags: { Enum.DeveloperMemoryTag } = {
     _TAG.GraphicsSlimModels
 }
 
-print(`waiting on SharedVars...`)
 SharedVars.waitForLoad()
 
 local sharedv = {}

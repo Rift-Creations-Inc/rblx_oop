@@ -8,7 +8,6 @@ local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 
 
-print(`waiting on SharedVars...`)
 SharedVars.waitForLoad()
 
 local sharedv = {}

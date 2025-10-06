@@ -1,5 +1,4 @@
 
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService('RunService')
 local Stats = game:GetService("Stats")
@@ -10,11 +9,9 @@ local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 
-print(`waiting on SharedVars...`)
 SharedVars.waitForLoad()
 
 local sharedv = {}
-print(`binding local table: 'sharedv' to SharedVars`)
 SharedVars.bind(sharedv)
 
 export type DebugScreen = {

@@ -16,6 +16,7 @@ export type TextOptions = DrawableOptions & {
     color: Color3?,
     backgroundColor: Color3?,
     backgroundTransparency: number?,
+    textXalign: Enum.TextXAlignment?,
     richText: boolean,
     size: number?,
     font: Enum.Font?
@@ -26,6 +27,7 @@ export type Text = Drawable & {
     color: Color3,
     backgroundColor: Color3,
     backgroundTransparency: number,
+    textXalign: Enum.TextXAlignment,
     richText: boolean,
     size: number,
     font: Enum.Font,
@@ -70,6 +72,7 @@ function Text.new(options: TextOptions?): Text
     self.color = options and options.color or Color3.new(1,1,1)
     self.backgroundColor = options and options.backgroundColor or Color3.new(0.286275, 0.286275, 0.286275)
     self.backgroundTransparency = options and options.backgroundTransparency or 0.5
+    self.textXalign = options and options.textXalign or Enum.TextXAlignment.Left
     self.size = options and options.size or 18
     self.font = options and options.font or Enum.Font.Code
 
@@ -108,7 +111,20 @@ function Text.render(self: Text,parent: Instance): TextLabel
     end
 
     local padding = Instance.new('UIPadding')
-    padding.PaddingRight = UDim.new(0,9)
+    
+    if self.textXalign == Enum.TextXAlignment.Center then
+        padding.PaddingLeft = UDim.new(0,9)
+        padding.PaddingRight = UDim.new(0,9)
+    end
+
+    if self.textXalign == Enum.TextXAlignment.Left then
+        padding.PaddingRight = UDim.new(0,9)
+    end
+
+    if self.textXalign == Enum.TextXAlignment.Right then
+        padding.PaddingLeft = UDim.new(0,9)
+    end
+
     padding.Parent = label
 
     self._instance = label

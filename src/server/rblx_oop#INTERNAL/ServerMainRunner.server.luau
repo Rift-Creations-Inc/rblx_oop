@@ -1,7 +1,7 @@
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerMainScript = game.ServerScriptService.Server.ServerMain
 local core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).init()
-local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 repeat 
@@ -10,14 +10,17 @@ until core.initialized
 
 local function write(txt: string)
     if not config.server.debugServerMainRunner then return end
-    print(`[<internal>::ServerMainRunner] {txt}`)
+    print(`[ServerMainRunner] {txt}`)
 end
 
 local function _doRunServer()
     write(`requiring ServerMain at {ServerMainScript:GetFullName()}`)
-    local ServerMain = require(ServerMainScript)
-    
-    ServerMain:Main()
+
+    task.spawn(function()
+        local ServerMain = require(ServerMainScript)
+        
+        ServerMain:Main()
+    end)
 end
 
 local function RunServerMain()
@@ -35,4 +38,12 @@ local function RunRblxOopInternal(fn: () -> ())
     fn()
 end
 
+local function _INTERNAL_MAIN()
+    write(`Running InternalServerMain...`)
+    task.spawn(function()
+        require(script.Parent.InternalServerMain):Main()
+    end)
+end
+
+_INTERNAL_MAIN()
 RunRblxOopInternal(Main)
