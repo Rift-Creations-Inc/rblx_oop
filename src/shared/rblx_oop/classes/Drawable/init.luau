@@ -14,6 +14,7 @@ export type DrawableOptions = {
 export type DrawableInstance = Instance?
 
 export type Drawable = {
+    --[[ @OverrideMe ]]
     render: (
         self: Drawable, 
         parent: Instance

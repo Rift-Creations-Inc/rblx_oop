@@ -45,7 +45,7 @@ export type Graphics2D = {
         self: Graphics2D
     ) -> (),
 
-    id: number
+    id: number,
 }
 
 local Graphics2D = {}
