@@ -42,15 +42,6 @@ end
 
 function ServerMain:Main()
     Core:registerPipe("sendGlobalNotification")
-    Core:registerPipe("serverLogRelay")
-    
-    task.spawn(function()
-        LogService.MessageOut:Connect(function(msg: string, mtype: Enum.MessageType)
-            -- if we don't handle this we get extreme lag :d
-            if msg == "[Core/DEBUG] dispatched event: serverLogRelay" then return end
-            Core:dispatchEvent("serverLogRelay",msg,mtype)
-        end)
-    end)
 
     Core
         :addEventListener("playerAdded",    ServerMain.onPlayerAdded)
