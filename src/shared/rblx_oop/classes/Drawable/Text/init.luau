@@ -22,7 +22,7 @@ export type TextOptions = DrawableOptions & {
     size: number?,
     font: Enum.Font?,
 
-    noWrap: boolean?
+    wrap: boolean?
 }
 
 export type Text = Drawable & {
@@ -35,7 +35,7 @@ export type Text = Drawable & {
     richText: boolean,
     size: number,
     font: Enum.Font,
-    noWrap: boolean,
+    wrap: boolean,
 
     setText: (
         self: Text,
@@ -65,7 +65,7 @@ end
 function Text.setPosition(self: Text, new: Vector2)
     local oldPos: UDim2 = self._instance.Position
     local newPos: UDim2 = UDim2.fromScale(new.X, new.Y)
-    dbg(`changing Text positon {tostring(self._instance.Position)} ==> {tostring(newPos)} (id={self.id})`)
+    dbg(`changing Text positon {tostring(oldPos)} ==> {tostring(newPos)} (id={self.id})`)
     self._instance.Position = newPos
 end
 
@@ -81,7 +81,7 @@ function Text.new(options: TextOptions?): Text
     self.textXalign = options and options.textXalign or Enum.TextXAlignment.Left
     self.textYalign = options and options.textYalign or Enum.TextYAlignment.Top
     self.size = options and options.size or 18
-    self.noWrap = options and options.noWrap or true
+    self.wrap = options and options.wrap or false
     self.font = options and options.font or Enum.Font.Code
 
     -- silence this cause it's get messy

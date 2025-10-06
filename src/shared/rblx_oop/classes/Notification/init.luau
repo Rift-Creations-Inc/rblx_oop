@@ -19,13 +19,24 @@ local activeNotifs: { {text: Text.Text, height: number} } = {}
 local notifSpacing = 0.015
 
 local function tweenTo(textObj: Text.Text, newY: number)
+    --[[
+        local oldPos: UDim2 = self._instance.Position
+    local newPos: UDim2 = UDim2.fromScale(new.X, new.Y)
+    dbg(`changing Text positon {tostring(oldPos)} ==> {tostring(newPos)} (id={self.id})`)
+    self._instance.Position = newPos
+    ]]
+    local oldPos = textObj._instance.Position
+    local newPos = UDim2.fromScale(1, newY)
+
     local inst = textObj._instance
     if not inst then return end
     game:GetService("TweenService"):Create(
         inst,
         TweenInfo.new(0.25,Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
-        { Position = UDim2.fromScale(1, newY) }
+        { Position = newPos }
     ):Play()
+
+    textObj:setPosition(newPos)
 end
 
 local function respositionNotifications()
@@ -40,7 +51,8 @@ local function respositionNotifications()
             totalOffset += pixHeight
         end
         local yPos = baseY - (totalOffset / workspace.CurrentCamera.ViewportSize.Y)
-        tweenTo(data.text, yPos)
+        data.text:setPosition(Vector2.new(1,yPos))
+        --tweenTo(data.text, yPos)
     end
 end
 
@@ -98,7 +110,7 @@ function Notification.createRawNotification(label: string, color: Color3,TEXT: s
 end
 
 
-function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: string,timeR: number?)
+function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG" | "SERVER",text: string,timeR: number?)
     timeR = timeR or 5
 
     if ntype == "URGENT" then
@@ -110,7 +122,12 @@ function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: 
     elseif ntype == "DEBUG" then
         if not config.client.debugNotifications then return end
         Notification.createRawNotification("DEBUG", Color3.fromRGB(255, 255, 255), text, timeR)
+    elseif ntype == "SERVER" then
+        Notification.createRawNotification("SERVER", Color3.fromRGB(209, 60, 255), text, timeR)
     end
 end
+
+-- if the server wants to send a notification
+
 
 return Notification
