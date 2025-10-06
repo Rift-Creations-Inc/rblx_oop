@@ -45,6 +45,7 @@ function ClientMain:CreateTitle()
     ClientMain.GFXTitle:addDrawable(title)
 end
 
+
 function ClientMain:SayHi()
     local plr = game:GetService("Players").LocalPlayer
     local helloText = Text.new({
@@ -57,13 +58,13 @@ function ClientMain:SayHi()
     ClientMain.GFX:addDrawable(helloText)
     task.wait(2)
     helloText:setText(`This game serves as a test of rblx_oop,`)
-    task.wait(3)
+    task.wait(2)
     helloText:setText("rblx_oop is inspired by Java but it's for Luau and Roblox! (The text you're seeing right now is created by rblx_oop!)")
-    task.wait(4.2)
+    task.wait(3)
     helloText:setText(`That's all I have to say.`)
-    task.wait(2)
+    task.wait(1.5)
     helloText:setText(`Enjoy this demo!`)
-    task.wait(2)
+    task.wait(1)
     helloText:destroy()
 end
 

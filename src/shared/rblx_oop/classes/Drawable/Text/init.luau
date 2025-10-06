@@ -17,9 +17,12 @@ export type TextOptions = DrawableOptions & {
     backgroundColor: Color3?,
     backgroundTransparency: number?,
     textXalign: Enum.TextXAlignment?,
+    textYalign: Enum.TextYAlignment?,
     richText: boolean,
     size: number?,
-    font: Enum.Font?
+    font: Enum.Font?,
+
+    noWrap: boolean?
 }
 
 export type Text = Drawable & {
@@ -28,26 +31,22 @@ export type Text = Drawable & {
     backgroundColor: Color3,
     backgroundTransparency: number,
     textXalign: Enum.TextXAlignment,
+    textYalign: Enum.TextYAlignment,
     richText: boolean,
     size: number,
     font: Enum.Font,
+    noWrap: boolean,
 
     setText: (
         self: Text,
         text: string
+    ) -> Text,
+
+    setPosition: (
+        self: Text,
+        new: Vector2
     ) -> Text
 }
-
-local function updateInternalText(self: Text, newText: string)
-    if self.text ~= newText then
-        dbg(`TextUpdate: "{self.text}" ==> "{newText}"`)
-    end
-    self.text = newText 
-    
-    if self._instance then
-        self._instance.Text = newText
-    end
-end
 
 local Text = {}
 Text.__index = Text
@@ -63,6 +62,13 @@ function Text.setText(self: Text,txt: string)
     end
 end
 
+function Text.setPosition(self: Text, new: Vector2)
+    local oldPos: UDim2 = self._instance.Position
+    local newPos: UDim2 = UDim2.fromScale(new.X, new.Y)
+    dbg(`changing Text positon {tostring(self._instance.Position)} ==> {tostring(newPos)} (id={self.id})`)
+    self._instance.Position = newPos
+end
+
 function Text.new(options: TextOptions?): Text
     local self: Text = Drawable.new(options) :: Text
     setmetatable(self, Text)
@@ -73,7 +79,9 @@ function Text.new(options: TextOptions?): Text
     self.backgroundColor = options and options.backgroundColor or Color3.new(0.286275, 0.286275, 0.286275)
     self.backgroundTransparency = options and options.backgroundTransparency or 0.5
     self.textXalign = options and options.textXalign or Enum.TextXAlignment.Left
+    self.textYalign = options and options.textYalign or Enum.TextYAlignment.Top
     self.size = options and options.size or 18
+    self.noWrap = options and options.noWrap or true
     self.font = options and options.font or Enum.Font.Code
 
     -- silence this cause it's get messy
@@ -94,14 +102,16 @@ function Text.render(self: Text,parent: Instance): TextLabel
     label.BackgroundColor3 = self.backgroundColor
     label.BackgroundTransparency = self.backgroundTransparency
     label.TextXAlignment = self.textXalign
+    label.TextYAlignment = self.textYalign
     label.BackgroundColor3 = Color3.new(0,0,0)
     label.Position = UDim2.fromScale(self.position.X, self.position.Y)
     label.AnchorPoint = self.anchor
     label.Parent = parent
 
     label.AutomaticSize = Enum.AutomaticSize.XY
-    label.Size = UDim2.fromOffset(0,self.size + 2)
-    label.TextWrapped = false
+    --label.Size = UDim2.fromOffset(0,self.size + 2)
+    label.Size = UDim2.new(0,0,0,0)
+    label.TextWrapped = self.noWrap
 
     if not (parent:FindFirstChildOfClass("UIListLayout") or parent:FindFirstChildOfClass("UIGridLayout")) then
         label.Position = UDim2.fromScale(self.position.X, self.position.Y)

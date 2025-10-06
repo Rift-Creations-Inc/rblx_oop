@@ -8,9 +8,9 @@ DebugMaster.__index = DebugMaster
 DebugMaster.screens = {}
 DebugMaster.conn = nil
 
--- Register a new screen
+-- Register a new screen / slave
 -- screen must have: .toggle(), .enabled, .toggleKey
-function DebugMaster.registerScreen(screen)
+function DebugMaster.registerSlaveScreen(screen)
     assert(screen.toggle and type(screen.toggle) == "function", "Screen must have a toggle() function")
     assert(screen.toggleKey and typeof(screen.toggleKey) == "EnumItem", "Screen must have a toggleKey Enum.KeyCode")
     table.insert(DebugMaster.screens, screen)

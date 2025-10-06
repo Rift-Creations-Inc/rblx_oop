@@ -11,6 +11,7 @@ local Client = {
     askToContinue = true,
     debugClientMainRunner = true,
     debugGraphics = true,
+    debugNotifications = true,
 }
 
 local Server = {
