@@ -78,7 +78,12 @@ function DebugSharedVars.new(): DebugSharedVars
     self.drawablesRight = {}
     self.graphics = Graphics2D.new("DebugHUD:DebugSharedVars")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F8
+
+    if RunService:IsStudio() then
+        self.toggleKey = Enum.KeyCode.F8
+    else
+        self.toggleKey = Enum.KeyCode.F5
+    end
 
     --self:bindToggle()
     self:hide()

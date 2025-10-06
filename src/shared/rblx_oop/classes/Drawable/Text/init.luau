@@ -93,13 +93,13 @@ function Text.render(self: Text,parent: Instance): TextLabel
     label.RichText = self.richText
     label.BackgroundColor3 = self.backgroundColor
     label.BackgroundTransparency = self.backgroundTransparency
-    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextXAlignment = self.textXalign
     label.BackgroundColor3 = Color3.new(0,0,0)
     label.Position = UDim2.fromScale(self.position.X, self.position.Y)
     label.AnchorPoint = self.anchor
     label.Parent = parent
 
-    label.AutomaticSize = Enum.AutomaticSize.X
+    label.AutomaticSize = Enum.AutomaticSize.XY
     label.Size = UDim2.fromOffset(0,self.size + 2)
     label.TextWrapped = false
 

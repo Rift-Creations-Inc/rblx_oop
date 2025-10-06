@@ -78,7 +78,11 @@ function DebugServerInfo.new(): DebugServerInfo
     self.drawablesRight = {}
     self.graphics = Graphics2D.new("DebugHUD:DebugServerInfo")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F6
+    if RunService:IsStudio() then
+        self.toggleKey = Enum.KeyCode.F6
+    else
+        self.toggleKey = Enum.KeyCode.F4
+    end
 
     --self:bindToggle()
     self:hide()

@@ -1,6 +1,5 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)

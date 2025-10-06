@@ -80,7 +80,12 @@ function DebugScreen.new(): DebugScreen
     self.drawablesRight = {}
     self.graphics = Graphics2D.new("DebugHUD;DebugScreen")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F4
+
+    if RunService:IsStudio() then
+        self.toggleKey = Enum.KeyCode.F3
+    else
+        self.toggleKey = Enum.KeyCode.F2
+    end
 
     --self:bindToggle()
     self:hide()

@@ -41,6 +41,10 @@ export type Graphics2D = {
         self: Graphics2D
     ) -> (),
 
+    destroy: (
+        self: Graphics2D
+    ) -> (),
+
     id: number
 }
 
@@ -101,6 +105,31 @@ function Graphics2D.clear(self: Graphics2D)
         obj:destroy()
     end
     self._drawnObjects = {}
+end
+
+function Graphics2D.destroy(self: Graphics2D)
+    dbg(`destroying Graphics2D (id={self.id})`)
+
+    -- Clear all drawable objects
+    for _, drawable in ipairs(self._drawnObjects) do
+        if drawable.destroy then
+            drawable:destroy()
+        elseif drawable._instance then
+            drawable._instance:Destroy()
+        end
+    end
+
+    self._drawnObjects = {}
+
+    -- Destroy the GUI container
+    if self._gui and self._gui.Parent then
+        self._gui:Destroy()
+    end
+
+    -- Remove metatable references
+    setmetatable(self, nil)
+
+    self = nil
 end
 
 return Graphics2D

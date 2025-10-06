@@ -79,7 +79,12 @@ function DebugMinimal.new(): DebugMinimal
     self.drawablesRight = {}
     self.graphics = Graphics2D.new("DebugHUD:DebugMinimal")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F2
+    
+    if RunService:IsStudio() then
+        self.toggleKey = Enum.KeyCode.F2
+    else
+        self.toggleKey = Enum.KeyCode.F1
+    end
 
     --self:bindToggle()
     self:hide()

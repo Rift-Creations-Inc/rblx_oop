@@ -106,7 +106,11 @@ function MemoryScreen.new(): MemoryScreen
     self.drawablesRight = {}
     self.graphics = Graphics2D.new("DebugHUD:MemoryScreen")
     self.updateConn = nil
-    self.toggleKey = Enum.KeyCode.F5
+    if RunService:IsStudio() then
+        self.toggleKey = Enum.KeyCode.F4
+    else
+        self.toggleKey = Enum.KeyCode.F3
+    end
 
     --self:bindToggle()
     self:hide()

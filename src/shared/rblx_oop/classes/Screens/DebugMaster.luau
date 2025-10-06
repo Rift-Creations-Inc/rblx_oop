@@ -17,7 +17,7 @@ function DebugMaster.registerScreen(screen)
 end
 
 -- Input handler
-function DebugMaster.onInput(input, gp)
+function DebugMaster.onInput(input: InputObject, gp)
     if gp then return end -- ignore input when game processed it
 
     for _, screen in ipairs(DebugMaster.screens) do
