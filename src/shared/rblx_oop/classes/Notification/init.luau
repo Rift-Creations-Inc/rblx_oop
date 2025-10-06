@@ -10,6 +10,7 @@ repeat
 until Core.initialized
 
 local function dbg(txt: string)
+    if not config.client.debugNotifications then return end
     print(`[Notification] {txt}`)
 end
 
@@ -20,11 +21,11 @@ end
 local Notification = {}
 Notification.__index = Notification
 
-local activeNotifs: { {text: Text.Text, height: number} } = {}
+local activeNotifs: { {text: Text.Text, height: number, id: string} } = {}
 local notifSpacing = 0.015
 
 local function respositionNotifications()
-    dbg(`respositioning Notifications...`)
+    dbg(`attempting to resposition Notifications...`)
 
     if #activeNotifs == 0 then
         dbg(`   no notification to reposition... bailing out`)
@@ -41,6 +42,7 @@ local function respositionNotifications()
         end
         local yPos = baseY - (totalOffset / workspace.CurrentCamera.ViewportSize.Y)
         data.text:setPosition(Vector2.new(1,yPos))
+        dbg(`   repositioned  {data.id}`)
         --tweenTo(data.text, yPos)
     end
 end
@@ -76,7 +78,7 @@ function Notification.createRawNotification(label: string, color: Color3,TEXT: s
         local ilabel = notifText._instance
         local height = ilabel and ilabel.AbsoluteSize.Y or 20
 
-        table.insert(activeNotifs, 1, {text = notifText, height = height})
+        table.insert(activeNotifs, 1, {text = notifText, height = height, id = NOTIFICATION_NAME})
 
         respositionNotifications()
 
@@ -106,7 +108,6 @@ end
 
 
 function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: string,timeR: number?,server: boolean?)
-    print("hey!")
     timeR = timeR or 5
 
     if ntype == "URGENT" then

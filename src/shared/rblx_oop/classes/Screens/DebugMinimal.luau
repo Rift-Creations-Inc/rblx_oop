@@ -93,7 +93,7 @@ function DebugMinimal.new(): DebugMinimal
 end
 
 function DebugMinimal.setupLeftDrawables(self: DebugMinimal,fontColor: Color3)
-    local labels = {1,2,3,4,5,6,7}
+    local labels = {1,2,3,4,5,6,7,8}
 
     for i, _ in ipairs(labels) do
         local drawable = Text.new({
@@ -259,20 +259,33 @@ function DebugMinimal.update(self: DebugMinimal)
     local playerCount = sharedv['game/playerCount']
     local jobId = game.JobId
 
+    local function getS(tag: Enum.DeveloperMemoryTag)
+        return game:GetService('Stats'):GetMemoryUsageMbForTag(tag)
+    end
+
+    local mem = math.floor(info.memory.totalMb())
+    local heap = math.floor(getS(Enum.DeveloperMemoryTag.LuaHeap))
+    local internal = math.floor(getS(Enum.DeveloperMemoryTag.Internal))
+    local scripts = math.floor(getS(Enum.DeveloperMemoryTag.Script))
+    local signal = math.floor(getS(Enum.DeveloperMemoryTag.Signals))
+    local instances = math.floor(getS(Enum.DeveloperMemoryTag.Instances))
+    local gui = math.floor(getS(Enum.DeveloperMemoryTag.Gui))
+
     local plr = game:GetService('Players').LocalPlayer
     local ping = math.floor((game:GetService('Players').LocalPlayer:GetNetworkPing() * 1000))
 
     --left side updates
         -- selene: allow(undefined_variable)
     self.drawables[1]:setText(`G: "{currentGame}" J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
-    self.drawables[2]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
-    self.drawables[3]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
-    self.drawables[4]:setText(` `)
+    self.drawables[2]:setText(`{mem}MB Total Mem, Lua heap: {heap}MB, Instances: {instances}MB, Signals: {signal}MB, Internal: {internal}MB Scripts: {scripts}, Gui: {gui}MB`)
+    self.drawables[3]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
+    self.drawables[4]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
+    self.drawables[5]:setText(` `)
 
     --client
-    self.drawables[5]:setText(`Client: {plr.DisplayName} (@{plr.Name}) UserId={plr.UserId}`)
-    self.drawables[6]:setText(getPlayerPosString())
-    self.drawables[7]:setText(getPlayerFacingDirectionString())
+    self.drawables[6]:setText(`Client: {plr.DisplayName} (@{plr.Name}) UserId={plr.UserId}`)
+    self.drawables[7]:setText(getPlayerPosString())
+    self.drawables[8]:setText(getPlayerFacingDirectionString())
 end
 
 function DebugMinimal.show(self: DebugMinimal)

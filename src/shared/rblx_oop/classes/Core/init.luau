@@ -224,6 +224,8 @@ function Core.registerBridge(self: Core, name: string)
     elseif RunService:IsClient() then
         self:registerEvent(name, remote.OnClientEvent)
     end
+
+    return self
 end
 
 function Core.registerEvent(self: Core,name: string,signal: RBXScriptSignal): Core

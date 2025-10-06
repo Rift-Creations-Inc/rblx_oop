@@ -1,8 +1,12 @@
 
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
+local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
+local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
+local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local ClientMain = {
     GFX = Graphics2D.new('ClientMain'),
@@ -68,6 +72,23 @@ function ClientMain:SayHi()
     helloText:destroy()
 end
 
+function ClientMain:debugButtons()
+    local function DUMP_CONFIGURATION()
+        print(`[DUMP_CONFIGURATION] as JSON: {HttpService:JSONEncode(config)}`)
+        print("[DUMP_CONFIGURATION] as table: ",config)
+        Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press f9 to view.",8)
+    end
+
+    local printConfBttn = Button.new({
+        pos = Vector2.new(.85,.18),
+        text = "dump rblx_oop config to console",
+        onClick = DUMP_CONFIGURATION,
+        backgroundColor = Color3.fromRGB(0,0,0),
+        size = 18
+    })
+    ClientMain.GFX:addDrawable(printConfBttn)
+end
+
 function ClientMain:Main()
     Core:addEventListener('sharedVarsUpdate', function(k,v)
         print(k,v)
@@ -75,6 +96,7 @@ function ClientMain:Main()
     
     Core:addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
+    ClientMain:debugButtons()
     ClientMain:CreateTitle()
     ClientMain:CreditsUi()
     ClientMain:SayHi()

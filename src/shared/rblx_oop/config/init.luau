@@ -10,7 +10,7 @@
 local Client = {
     askToContinue = true,
     debugClientMainRunner = true,
-    debugGraphics = true,
+    debugGraphics = false,
     debugNotifications = true,
 }
 
