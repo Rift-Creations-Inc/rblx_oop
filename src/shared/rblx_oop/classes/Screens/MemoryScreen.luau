@@ -1,5 +1,4 @@
 
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService('RunService')
 local Stats = game:GetService("Stats")
@@ -8,7 +7,6 @@ local screenShared = require(script.Parent.screenShared)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
-local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 
 local _TAG = Enum.DeveloperMemoryTag 
 local memoryTags: { Enum.DeveloperMemoryTag } = {
@@ -118,7 +116,6 @@ function MemoryScreen.new(): MemoryScreen
 end
 
 function MemoryScreen.setupDrawables(self: MemoryScreen)
-    local fontColor = Color3.fromRGB(255, 255, 255)
 
     local wrapper = Instance.new('Frame')
     wrapper.Name = 'DebugWrapper'
