@@ -123,11 +123,10 @@ function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: 
 end
 
 -- if the server wants to send a notification
-Core:registerBridge("sendGlobalNotification")
-Core:addEventListener("sendGlobalNotification", function(ntype: string, txt: string, timeR: number)
-    print(`ntype={ntype}, txt={txt}, timeR={timeR}`)
-    print(`calling Notification.new()`)
-    Notification.new(ntype, txt, timeR,true)
-end)
+Core
+    :registerBridge("sendGlobalNotification")
+    :addEventListener("sendGlobalNotification", function(ntype: string, txt: string, timeR: number)
+        Notification.new(ntype, txt, timeR,true)
+    end)
 
 return Notification
