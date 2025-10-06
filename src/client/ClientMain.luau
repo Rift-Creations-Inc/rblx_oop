@@ -6,7 +6,8 @@ local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 
 local ClientMain = {
-    GFX = Graphics2D.new('ClientMain')
+    GFX = Graphics2D.new('ClientMain'),
+    GFXTitle = Graphics2D.new('GameTitle',true)
 }
 
 local gameSettings = UserSettings().GameSettings
@@ -31,6 +32,19 @@ function ClientMain:CreditsUi()
     })
 
     ClientMain.GFX:addDrawable(creditsUi)
+end
+
+function ClientMain:CreateTitle()
+    local title = Text.new({
+        text = `rblx_oop testing environment :D`,
+        pos = Vector2.new(.5,0),
+        size = 25,
+        textXalign = Enum.TextXAlignment.Center,
+        backgroundColor = Color3.new(0,0,0),
+        backgroundTransparency = 0
+    })
+
+    ClientMain.GFXTitle:addDrawable(title)
 end
 
 function ClientMain:SayHi()
@@ -62,6 +76,7 @@ function ClientMain:Main()
     
     Core:addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
+    ClientMain:CreateTitle()
     ClientMain:CreditsUi()
     ClientMain:SayHi()
     return

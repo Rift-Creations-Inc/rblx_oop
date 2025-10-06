@@ -47,7 +47,7 @@ export type Graphics2D = {
 local Graphics2D = {}
 Graphics2D.__index = Graphics2D
 
-function Graphics2D.new(name: string?): Graphics2D
+function Graphics2D.new(name: string?,ignoreGuiInset: boolean?): Graphics2D
     local self = {} :: Graphics2D
     self.id = math.random(1,100)
 
@@ -62,6 +62,8 @@ function Graphics2D.new(name: string?): Graphics2D
     else
         gui.Parent = game:GetService('CoreGui')
     end
+
+    gui.IgnoreGuiInset = ignoreGuiInset or false
 
     self._gui = gui
     self._drawnObjects = {} :: { Drawable }
