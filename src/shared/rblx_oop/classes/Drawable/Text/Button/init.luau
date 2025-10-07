@@ -11,16 +11,31 @@ local Text = require(script.Parent)
 type Text = Text.Text
 type TextOptions = Text.TextOptions
 type DrawableInstance = Drawable.DrawableInstance
+type EventCallbacks<T> = Drawable.EventCallbacks<T>
+export type Callback<S,T...> = Drawable.Callback<S,T...>
 
-export type ButtonOptions = TextOptions & {
-	uiSize: UDim2?, -- ✅ new distinct field for button size
-	onClick: ((self: any) -> ())?,
+export type ButtonCallbacks = EventCallbacks<Button> & {
+	onMb1Click: Callback<Button>,
+	onMb1Up: Callback<Button,number,number>,
+	onMb1Down: Callback<Button,number,number>,
+
+	onMb2Click: Callback<Button>,
+	onMb2Up: Callback<Button,number,number>,
+	onMb2Down: Callback<Button,number,number>,
 }
 
+export type ButtonOptions = {
+	uiSize: UDim2?,
+
+	events: ButtonCallbacks?
+} & TextOptions
+
+
 export type Button = Text & {
-	uiSize: UDim2?, -- ✅ UI element size
-	onClick: ((self: Button) -> ())?,
+	uiSize: UDim2?, 
 	_buttonInstance: TextButton?,
+
+	events: ButtonCallbacks?,
 }
 
 local Button = {}
@@ -28,12 +43,12 @@ Button.__index = Button
 setmetatable(Button, { __index = Text })
 
 function Button.new(options: ButtonOptions?): Button
-	local self = Text.new(options) :: any
+	local self: Button = Text.new(options) :: Button
 	setmetatable(self, Button)
 
 	self.uiSize = options and options.uiSize or nil
-	self.onClick = options and options.onClick or nil
 	self._buttonInstance = nil
+	self.events = options and options.events or {} :: ButtonCallbacks
 
 	dbg(`new Button, text="{options and options.text or 'nil'}" (id={self.id})`)
 	return self
@@ -79,15 +94,47 @@ function Button.render(self: Button, parent: Instance): TextButton
 	padding.PaddingBottom = UDim.new(0, 2)
 	padding.Parent = button
 
-	-- ✅ Connect click listener
-	if self.onClick then
+	if self.events.onMb1Click then
 		button.MouseButton1Click:Connect(function()
-			self.onClick(self)
+			self.events.onMb1Click(self)
+		end)
+	end
+
+	if self.events.onMb1Down then
+		button.MouseButton1Down:Connect(function(x: number, y: number)
+			self.events.onMb1Down(self,x,y)
+		end)
+	end
+
+	if self.events.onMb1Up then
+		button.MouseButton1Up:Connect(function(x: number, y: number)
+			self.events.onMb1Up(self,x,y)
+		end)
+	end
+	
+
+	if self.events.onMb2Click then
+		button.MouseButton2Click:Connect(function()
+			self.events.onMb2Click(self)
+		end)
+	end
+
+	if self.events.onMb2Down then
+		button.MouseButton2Down:Connect(function(x: number, y: number)
+			self.events.onMb2Down(self,x,y)
+		end)
+	end
+
+	if self.events.onMb2Up then
+		button.MouseButton2Up:Connect(function(x: number,y: number)
+			self.events.onMb1Up(self,x,y)
 		end)
 	end
 
 	self._buttonInstance = button
 	self._instance = button
+
+	self:doConnectEvents()
 	return button
 end
 

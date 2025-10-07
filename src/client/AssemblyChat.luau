@@ -12,10 +12,15 @@ local RbxSystem: TextChannel = game.TextChatService:WaitForChild('TextChannels')
 
 local COLOR_ERR = Color3.fromRGB(255, 85, 85):ToHex()
 local COLOR_OUT = Color3.fromRGB(255, 255, 255):ToHex()
+local COLOR_DBG = Color3.fromRGB(102, 102, 102):ToHex()
 
 local function sendMessage(color: string, msg: string)
     print(`[AssemblyChat] {msg}`)
 	RbxSystem:DisplaySystemMessage(`<font color="#{color}">[AssemblyChat] {msg}</font>`)
+end
+
+local function sendMessageRaw(msg: string)
+    RbxSystem:DisplaySystemMessage(msg)
 end
 
 export type regs_t = {
@@ -64,6 +69,12 @@ end
 local function ASM_OUT(msg: string)
     sendMessage(COLOR_OUT, msg)
 end
+
+local function ASM_DBG(msg: string)
+    sendMessage(COLOR_DBG, `debug: {msg}`)
+end
+
+-- based on syscall write
 
 local function getRegNumber(name: string)
     local val = regs[name:lower()]
@@ -366,26 +377,40 @@ function Instructions.SYSCALL(args: {string})
         local fd: number = (regs.rdi :: number)
         local buf: string = (regs.rsi :: string)
         local size: number = (regs.rdx :: number)
-
+        
         local output = string.sub(buf, 1, size)
-
+        
         if fd == 1 then
-            ASM_OUT(output)
-        elseif fd == 2 then
-            print(output)
+            sendMessageRaw(`stdout: {output}`)
+            elseif fd == 2 then
+                print(`tty1: {output}`)
+            end
         end
-    end
-
-    -- rax=1 = SYS_WRITE
+        
+        local function sys_exit()
+            local err_code: number = (regs.rdi :: number)
+            ASM_OUT(`Local player invoked SYS_EXIT. Kicking them...`)
+            game:GetService('Players').LocalPlayer:Kick(`SYS_EXIT Invoked: {err_code}`)
+        end
+        
+        -- rax=1 = SYS_WRITE
     if regs.rax == 1 then 
+        ASM_DBG("Invoking SYS_WRITE....")
         sys_write() 
         return 
     end
+
+    if regs.rax == 60 then
+        ASM_DBG("Invoking SYS_EXIT...")
+        sys_exit()
+    end
+
+    ASM_ERR("Unknown or unrecognized syscall: RAX="..regs.rax)
 end
 
 function Instructions._DUMPREGS(args: {string})
     for k,v in pairs(regs) do
-        ASM_OUT(`_DUMPREGS: {k}: {v}`)
+        ASM_OUT(`_DUMPREGS: {k:upper()}: {v}`)
     end
 end
 
@@ -396,7 +421,7 @@ function Instructions._PRINT(args: {string})
         return
     end
 
-    ASM_OUT(`_PRINT: {regs[dst:lower()]}`)
+    ASM_OUT(`_PRINT: {dst:upper()}={regs[dst:lower()]}`)
 end
 
 function Instructions.NOP(args: {string})
@@ -405,7 +430,7 @@ end
 
 function AssemblyChat:start()
     print("hi")
-    ASM_OUT("assembly chat started")
+    ASM_OUT("Assembly chat started")
     Core:addEventListener("localPlayerChatted", function(msg: string,_)
         local opcode, args = parseInstruction(msg)
         if not opcode then return end

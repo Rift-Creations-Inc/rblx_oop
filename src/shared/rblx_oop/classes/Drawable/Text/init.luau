@@ -8,6 +8,7 @@ local function dbg(txt: string)
 end
 
 type Drawable = Drawable.Drawable
+type EventCallbacks<T> = Drawable.EventCallbacks<T>
 type DrawableOptions = Drawable.DrawableOptions
 type DrawableInstance = Drawable.DrawableInstance
 
@@ -36,6 +37,8 @@ export type Text = Drawable & {
     size: number,
     font: Enum.Font,
     wrap: boolean,
+
+    events: EventCallbacks<Text>?,
 
     setText: (
         self: Text,
@@ -138,6 +141,7 @@ function Text.render(self: Text,parent: Instance): TextLabel
     padding.Parent = label
 
     self._instance = label
+    self:doConnectEvents()
     return label
 end
 

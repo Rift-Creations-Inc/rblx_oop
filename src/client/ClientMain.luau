@@ -122,26 +122,26 @@ function ClientMain:debugButtons()
     local printConfBttn = Button.new({
         pos = Vector2.new(.85,.18),
         text = "dump rblx_oop config to console",
-        onClick = DUMP_CONFIGURATION,
         backgroundColor = Color3.fromRGB(0,0,0),
         size = 18
     })
+    printConfBttn.events.onMb1Click = DUMP_CONFIGURATION
 
     local generateCoreDumpBttn = Button.new({
         pos = Vector2.new(.85,.25),
         text = "generate core dump and write it to the console",
-        onClick = DUMP_CORE,
         backgroundColor = Color3.fromRGB(0,0,0),
         size = 18 
     })
+    generateCoreDumpBttn.events.onMb1Click = DUMP_CORE
 
     local dumpPlayerJoinInfo = Button.new({
         pos = Vector2.new(.85,.32),
         text = "dump local player join info",
-        onClick = DUMP_PLAYER_JOIN_INFO,
         backgroundColor = Color3.fromRGB(0,0,0),
-        size = 18 
+        size = 18, 
     })
+    dumpPlayerJoinInfo.events.onMb1Click = DUMP_PLAYER_JOIN_INFO
 
     ClientMain.GFX:addDrawable(dumpPlayerJoinInfo)
     ClientMain.GFX:addDrawable(generateCoreDumpBttn)
