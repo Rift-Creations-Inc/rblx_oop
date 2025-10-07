@@ -7,6 +7,7 @@ local HttpService = game:GetService("HttpService")
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
@@ -45,6 +46,33 @@ local ClientMainScript = playerScripts.Client.ClientMain
 local function _PRINT_CONFIGURATION()
     write(`Printing configuration as json...`)
     print(`[CONFIGURATION] {HttpService:JSONEncode(config)}`)
+end
+
+local function writeCmw(txt: {string})
+    if not config.client.memoryWatcher.debugCmw then return end
+    print(`[ClientMemoryWatcher] {txt}`)
+end
+
+local function clientMemoryWatcher()
+    while true do
+        writeCmw("running a check...")
+        local mem: number = Core.info().getMemoryInfo().totalMb()
+        if mem > config.client.memoryWatcher.threshold then
+            -- adjust to server or std debug keymap(s)
+            local keyToPress = "F3"
+            if RunService:IsStudio() then
+                keyToPress = "F4"
+            end
+            warn(`[ClientMemoryWatcher] sending notification... (mem={mem}MB)`)
+            Notification.new(
+                "URGENT",
+                `Client memory usage is abnormally\nhigh for this game ( >{config.client.memoryWatcher.threshold}MB ).\nPress {keyToPress} to view memory usage.`,
+                25
+            )
+        end
+
+        task.wait(config.client.memoryWatcher.checkInterval)
+    end
 end
 
 -- Wait for SharedVars before running ClientMain
@@ -126,6 +154,12 @@ SharedVars.onReady(function()
     task.spawn(function()
         local ClientMain = require(ClientMainScript)
         ClientMain:Main()
+    end)
+
+    task.wait(5)
+    task.spawn(function()
+        write(`starting CMW (client memory watcher)`)
+        clientMemoryWatcher()
     end)
     
 end)

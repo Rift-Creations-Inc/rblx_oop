@@ -201,7 +201,6 @@ end
 
 local currentGame = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name or game.Name
 local currentVersion = game.PlaceVersion
-local latestVersion = game:GetService("InsertService"):GetLatestAssetVersionAsync(game.PlaceId)
 
 local function getPlayerPosString(): string
     local plr = game:GetService('Players').LocalPlayer
@@ -283,7 +282,7 @@ function DebugScreen.update(self: DebugScreen)
 
     --left side updates
         -- selene: allow(undefined_variable)
-    self.drawables[1]:setText(`G: "{currentGame}" J: {jobId} V: {currentVersion} L: {latestVersion} I: {_VERSION} R: Roblox {version()}`)
+    self.drawables[1]:setText(`G: "{currentGame}" J: {jobId} V: {currentVersion} I: {_VERSION} R: Roblox {version()}`)
     self.drawables[2]:setText(`{mem}MB Total Mem, Lua heap: {heap}MB, Instances: {instances}MB, Signals: {signal}MB, Internal: {internal}MB Scripts: {scripts}, Gui: {gui}MB`)
     self.drawables[3]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
     self.drawables[4]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)

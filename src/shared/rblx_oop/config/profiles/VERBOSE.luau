@@ -12,6 +12,11 @@ local Client = {
     debugClientMainRunner = true,
     debugGraphics = true,
     debugNotifications = true,
+    memoryWatcher = {
+        checkInterval = 15,
+        threshold = 2350,
+        debugCmw = true,
+    }
 }
 
 local Server = {
