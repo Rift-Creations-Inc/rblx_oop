@@ -2,6 +2,7 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
+local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
@@ -12,6 +13,18 @@ local ClientMain = {
     GFX = Graphics2D.new('ClientMain'),
     GFXTitle = Graphics2D.new('GameTitle',true)
 }
+
+local function DUMP_PLAYER_JOIN_INFO()
+    local plr = game:GetService('Players').LocalPlayer
+    local jd = plr:GetJoinData()
+    
+    print(`[DUMP_PLAYER_JOIN_INFO] join data for {plr.Name}`)
+    print(`[DUMP_PLAYER_JOIN_INFO]     LaunchData={jd.LaunchData}`)
+    print(`[DUMP_PLAYER_JOIN_INFO]     SourcePlaceId={jd.SourcePlaceId}`)
+    print(`[DUMP_PLAYER_JOIN_INFO]     SourcePlaceId={jd.SourceGameId}`)
+
+    Notification.new("LOW", "Player join data has been dumped\nto the console. Press F9 to view.")
+end
 
 local gameSettings = UserSettings().GameSettings
 function ClientMain.gameSettingChanged(name)
@@ -57,7 +70,6 @@ function ClientMain:CreateTitle()
     ClientMain.GFXTitle:addDrawable(title)
 end
 
-
 function ClientMain:SayHi()
     local plr = game:GetService("Players").LocalPlayer
     local helloText = Text.new({
@@ -80,9 +92,18 @@ function ClientMain:SayHi()
     helloText:destroy()
 end
 
+function ClientMain:SetupRPC()
+    print(`setting up BloxstrapRPC...`)
+    BloxstrapRPC.SetRichPresence({
+        details = "rblx_oop publish",
+        state = "running :D",
+    })
+    print(`done, RPC should now be set.`)
+end
+
 function ClientMain:debugButtons()
     local function DUMP_CONFIGURATION()
-        Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press f9 to view.",8)
+        Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press F9 to view.",8)
         print(`[DUMP_CONFIGURATION] as JSON: {HttpService:JSONEncode(config)}`)
         print("[DUMP_CONFIGURATION] as table: ",config)
     end
@@ -92,7 +113,7 @@ function ClientMain:debugButtons()
         local DUMP = Core:generateDump()
         print(`[DUMP_CORE] dump generated, guid is {DUMP.dumpGuid}`)
 
-        Notification.new("LOW",`core dump has been generated\nand dumped to console. dump guid is\n{DUMP.dumpGuid}.press f9 to view the console.`)
+        Notification.new("LOW",`core dump has been generated and dumped to the console. dump guid is\n{DUMP.dumpGuid}. Press F9 to view the console.`)
         print(`[DUMP_CORE] as JSON: {HttpService:JSONEncode(DUMP)}`)
         print(`[DUMP_CORE] as table: `,DUMP)
     end
@@ -105,7 +126,6 @@ function ClientMain:debugButtons()
         size = 18
     })
 
-
     local generateCoreDumpBttn = Button.new({
         pos = Vector2.new(.85,.25),
         text = "generate core dump and write it to the console",
@@ -114,21 +134,42 @@ function ClientMain:debugButtons()
         size = 18 
     })
 
+    local dumpPlayerJoinInfo = Button.new({
+        pos = Vector2.new(.85,.32),
+        text = "dump local player join info",
+        onClick = DUMP_PLAYER_JOIN_INFO,
+        backgroundColor = Color3.fromRGB(0,0,0),
+        size = 18 
+    })
+
+    ClientMain.GFX:addDrawable(dumpPlayerJoinInfo)
     ClientMain.GFX:addDrawable(generateCoreDumpBttn)
     ClientMain.GFX:addDrawable(printConfBttn)
 end
 
+local lastPlr
 function ClientMain:Main()
-    Core:addEventListener('sharedVarsUpdate', function(k,v)
-        print(k,v)
-    end)
-    
-    Core:addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
+    -- piped version of playerAdded
+    Core
+        :addEventListener("PplayerAdded", function(plr: Player)
+            if lastPlr == plr then return end
+            Notification.new("LOW", `{plr.Name} has joined!`)
+            lastPlr = plr
+        end)
+        :addEventListener("PplayerRemoving", function(plr: Player)
+            Notification.new("LOW", `{plr.Name} has left!`)
+        end)
+        :addEventListener('sharedVarsUpdate', function(k,v)
+            print(k,v)
+        end)
+        :addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
+    ClientMain:SetupRPC()
     ClientMain:debugButtons()
     ClientMain:CreateTitle()
     ClientMain:Time()
     ClientMain:SayHi()
+
     return
 end
 

@@ -159,8 +159,24 @@ local function registerDefaults(core: Core)
         game:BindToClose(function()
             Bindable:Fire()
         end)
-
     end
+
+    dbg(`register default pipes`)
+    dbg("   PplayerAdded")
+    dbg("   PplayerRemoving")
+    core
+        :registerPipe("PplayerAdded")
+        :registerPipe("PplayerRemoving")
+
+    core:addEventListener("playerAdded", function(plr: Player)
+        -- send to pipe...
+        core:dispatchEvent("PplayerAdded",plr)
+    end)
+
+    core:addEventListener("playerRemoving", function(plr: Player)
+        -- send to pipe...
+        core:dispatchEvent("PplayerRemoving",plr)
+    end)
 end
 
 local function LENGTH(t: { [any]: any})

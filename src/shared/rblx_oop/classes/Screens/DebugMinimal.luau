@@ -200,7 +200,7 @@ end
 
 local currentGame = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name or game.Name
 local currentVersion = game.PlaceVersion
-local latestVersion = game:GetService("InsertService"):GetLatestAssetVersionAsync(game.PlaceId)
+local latestVersion = game:GetService("InsertService"):GetLatestAssetVersionAsync(game.PlaceVersion)
 
 local function getPlayerPosString(): string
     local plr = game:GetService('Players').LocalPlayer
