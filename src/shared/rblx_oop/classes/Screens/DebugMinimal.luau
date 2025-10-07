@@ -101,7 +101,7 @@ function DebugMinimal.setupLeftDrawables(self: DebugMinimal,fontColor: Color3)
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = config.Client.defaultFont
+            font = config.client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerLeft)
@@ -117,7 +117,7 @@ function DebugMinimal.setupRightDrawables(self: DebugMinimal, fontColor: Color3)
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = config.Client.defaultFont
+            font = config.client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerRight)

@@ -142,7 +142,7 @@ function DebugSharedVars.setupDrawables(self: DebugSharedVars)
         pos = Vector2.new(0,1),
         color = Color3.fromRGB(66, 255, 97),
         text = SCREEN_LABEL,
-        font = config.Client.defaultFont
+        font = config.client.defaultFont
     })
 
     self.graphics:addDrawable(bottomLabel)

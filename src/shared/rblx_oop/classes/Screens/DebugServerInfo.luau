@@ -99,7 +99,7 @@ function DebugServerInfo.setupLeftDrawables(self: DebugServerInfo,fontColor: Col
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = config.Client.defaultFont
+            font = config.client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerLeft)
@@ -115,7 +115,7 @@ function DebugServerInfo.setupRightDrawables(self: DebugServerInfo, fontColor: C
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = config.Client.defaultFont
+            font = config.client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerRight)
@@ -175,7 +175,7 @@ function DebugServerInfo.setupDrawables(self: DebugServerInfo)
         pos = Vector2.new(0,1),
         color = Color3.fromRGB(66, 255, 97),
         text = SCREEN_LABEL,
-        font = config.Client.defaultFont
+        font = config.client.defaultFont
     })
 
     self.graphics:addDrawable(bottomLabel)
