@@ -273,9 +273,12 @@ function DebugMinimal.update(self: DebugMinimal)
     local plr = game:GetService('Players').LocalPlayer
     local ping = math.floor((game:GetService('Players').LocalPlayer:GetNetworkPing() * 1000))
 
+    local isStudio = RunService:IsStudio()
+    local studioStr = isStudio and "[STUDIO] " or ""
+
     --left side updates
         -- selene: allow(undefined_variable)
-    self.drawables[1]:setText(`G: "{currentGame}" J: {jobId} V: {currentVersion} I: {_VERSION} R: Roblox {version()}`)
+    self.drawables[1]:setText(`{studioStr}G: "{currentGame}" J: {jobId} V: {currentVersion} I: {_VERSION} R: Roblox {version()}`)
     self.drawables[2]:setText(`{mem}MB Total Mem, Lua heap: {heap}MB, Instances: {instances}MB, Signals: {signal}MB, Internal: {internal}MB Scripts: {scripts}, Gui: {gui}MB`)
     self.drawables[3]:setText(`{fps} fps, T: {qualityLvl.Name} gpuFT: {gpuFt} cpuFT {cpuFt}`)
     self.drawables[4]:setText(`"{serverT}" server ({ipAddr} @ {location}) @ {ping} ms ping, {tx} tx, {rx} rx, {playerCount} player(s)`)
