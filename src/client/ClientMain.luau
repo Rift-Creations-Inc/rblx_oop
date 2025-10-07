@@ -6,6 +6,7 @@ local AssemblyChat = require(script.Parent.AssemblyChat)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
+local InputBar = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.InputBar)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
@@ -102,6 +103,23 @@ function ClientMain:SetupRPC()
     print(`done, RPC should now be set.`)
 end
 
+
+function ClientMain:commandBar()
+    local bar = InputBar.new({
+        pos = Vector2.new(0,.85),
+        size = 18,
+        uiSize = UDim2.fromScale(1, .05),
+        backgroundColor = Color3.fromRGB(0,0,0),
+        placeholder = "hi",
+        clearOnFocus = true
+    })
+
+    bar.events.onEnterPressed = function(self: InputBar.InputBar)
+        print("enter pressed: "..self.text)
+    end
+
+end
+
 function ClientMain:debugButtons()
     local function DUMP_CONFIGURATION()
         Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press F9 to view.",8)
@@ -164,6 +182,7 @@ function ClientMain:Main()
             print(k,v)
         end)
         :addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
+
 
     AssemblyChat:start()
     

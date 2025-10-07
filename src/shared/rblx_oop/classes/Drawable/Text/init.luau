@@ -23,7 +23,8 @@ export type TextOptions = DrawableOptions & {
     size: number?,
     font: Enum.Font?,
 
-    wrap: boolean?
+    wrap: boolean?,
+    uiSize: UDim2?
 }
 
 export type Text = Drawable & {
@@ -37,6 +38,7 @@ export type Text = Drawable & {
     size: number,
     font: Enum.Font,
     wrap: boolean,
+    uiSize: UDim2?,
 
     events: EventCallbacks<Text>?,
 
@@ -85,6 +87,7 @@ function Text.new(options: TextOptions?): Text
     self.textYalign = options and options.textYalign or Enum.TextYAlignment.Top
     self.size = options and options.size or 18
     self.wrap = options and options.wrap or false
+    self.uiSize = options and options.uiSize or nil
     self.font = options and options.font or Enum.Font.Code
 
     -- silence this cause it's get messy
@@ -111,10 +114,16 @@ function Text.render(self: Text,parent: Instance): TextLabel
     label.AnchorPoint = self.anchor
     label.Parent = parent
 
-    label.AutomaticSize = Enum.AutomaticSize.XY
     --label.Size = UDim2.fromOffset(0,self.size + 2)
-    label.Size = UDim2.new(0,0,0,0)
     label.TextWrapped = self.noWrap
+    
+    if self.uiSize then
+        label.AutomaticSize = Enum.AutomaticSize.None
+        label.Size = self.uiSize
+    else
+        label.AutomaticSize = Enum.AutomaticSize.XY
+        label.Size = UDim2.new(0,0,0,0)
+    end
 
     if not (parent:FindFirstChildOfClass("UIListLayout") or parent:FindFirstChildOfClass("UIGridLayout")) then
         label.Position = UDim2.fromScale(self.position.X, self.position.Y)
