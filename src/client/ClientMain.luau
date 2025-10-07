@@ -116,8 +116,10 @@ function ClientMain:commandBar()
 
     bar.events.onEnterPressed = function(self: InputBar.InputBar)
         print("enter pressed: "..self.text)
+        -- you could do parsing here
     end
 
+    ClientMain.GFX:addDrawable(bar)
 end
 
 function ClientMain:debugButtons()
