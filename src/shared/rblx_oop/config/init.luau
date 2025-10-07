@@ -1,3 +1,5 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GFLAGS = require(ReplicatedStorage.Shared.rblx_oop.gflags.GFLAGS)
 --[[
     @StaticClasss[
         Client
@@ -11,4 +13,5 @@
 --[[
     profiles r now supported :D
 --]]
-return require(script.profiles.VERBOSE)
+local GFlagConfigurationProfile = GFLAGS.GetValue("GFlagConfigurationProfile")
+return require(script.profiles:FindFirstChild(GFlagConfigurationProfile))

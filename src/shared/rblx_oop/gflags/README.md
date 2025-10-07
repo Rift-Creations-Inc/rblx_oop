@@ -9,3 +9,4 @@ How is this different from config?
 formatted the same way as FFlags and behaves more like it.
 
 - I liked FFlags. I got sad it was removed. :d <-- me when fflags was removed
+- Also acts a root of **all** settings, no profiles for GFlags are supported natively. Although support can be added via external means.
