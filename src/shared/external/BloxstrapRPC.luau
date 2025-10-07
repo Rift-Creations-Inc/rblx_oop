@@ -6,6 +6,8 @@
 -- Further documentation is available at https://github.com/bloxstraplabs/bloxstrap/wiki/Integrating-Bloxstrap-functionality-into-your-game
 
 local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GFLAGS = require(ReplicatedStorage.Shared.rblx_oop.gflags.GFLAGS)
 
 local BloxstrapRPC = {}
 
@@ -41,6 +43,7 @@ end
 	Avoid using this, as every command available will have a dedicated function for it.
 ]=]
 function BloxstrapRPC.SendMessage(command: string, data: any)
+	if not GFLAGS.GetValueAsBoolean("GFlagBlUseBloxstrapRPC") then return end
 	local json = HttpService:JSONEncode({
 		command = command,
 		data = data,

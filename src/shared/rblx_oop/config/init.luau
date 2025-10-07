@@ -13,5 +13,5 @@ local GFLAGS = require(ReplicatedStorage.Shared.rblx_oop.gflags.GFLAGS)
 --[[
     profiles r now supported :D
 --]]
-local GFlagConfigurationProfile = GFLAGS.GetValue("GFlagConfigurationProfile")
-return require(script.profiles:FindFirstChild(GFlagConfigurationProfile))
+local GFlagSzConfigurationProfile = GFLAGS.GetValue("GFlagSzConfigurationProfile")
+return require(script.profiles:FindFirstChild(GFlagSzConfigurationProfile))
