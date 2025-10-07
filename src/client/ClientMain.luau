@@ -1,6 +1,7 @@
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local AssemblyChat = require(script.Parent.AssemblyChat)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
@@ -127,8 +128,8 @@ function ClientMain:commandBar()
     commandBarGFX:hide()
 
     game:GetService('UserInputService').InputBegan:Connect(function(inp,gpe)
-        if gpe and inp.KeyCode ~= Enum.KeyCode.Backquote then 
-            warn(`GPE: skipping...`)
+        if gpe and inp.KeyCode ~= Enum.KeyCode.Backquote or inp.KeyCode == nil then 
+            warn(`GPE: skipping... {UserInputService:GetStringForKeyCode(inp.KeyCode)}`)
             return 
         end
         if inp.KeyCode == Enum.KeyCode.Backquote then
