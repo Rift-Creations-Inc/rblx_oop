@@ -17,7 +17,7 @@ local Client = {
         threshold = 2500,
         debugCmw = true,
     },
-    defaultFont = Enum.Font.RobotoMono,
+    defaultFont = Enum.Font.Code,
 }
 
 local Server = {

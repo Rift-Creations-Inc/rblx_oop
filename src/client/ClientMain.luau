@@ -64,7 +64,8 @@ function ClientMain:CreateTitle()
     local title = Text.new({
         text = `rblx_oop testing environment :D`,
         pos = Vector2.new(.5,0),
-        size = 25,
+        size = 18,
+        uiSize = UDim2.fromScale(1, .035),
         textXalign = Enum.TextXAlignment.Center,
         backgroundColor = Color3.new(0,0,0),
         backgroundTransparency = 0
@@ -217,8 +218,6 @@ function ClientMain:Main()
     ClientMain:debugButtons()
     ClientMain:CreateTitle()
     ClientMain:Time()
-    ClientMain:SayHi()
-
 
     return
 end
