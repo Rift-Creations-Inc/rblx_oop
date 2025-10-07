@@ -114,7 +114,7 @@ function ClientMain:commandBar()
         clearOnFocus = true
     })
 
-    bar.events.onEnterPressed = function(self: InputBar.InputBar)
+    bar.events.onEnterPressed = function()
         print("enter pressed: "..self.text)
         -- you could do parsing here
     end
