@@ -105,6 +105,8 @@ end
 
 
 function ClientMain:commandBar()
+    local showing = false
+    local commandBarGFX = Graphics2D.new("commandBarGFX")
     local bar = InputBar.new({
         pos = Vector2.new(0,.85),
         size = 18,
@@ -114,12 +116,31 @@ function ClientMain:commandBar()
         clearOnFocus = true
     })
 
-    bar.events.onEnterPressed = function()
+    local function _pressed()
         print("enter pressed: "..self.text)
-        -- you could do parsing here
     end
 
-    ClientMain.GFX:addDrawable(bar)
+    bar.events.onEnterPressed = _pressed
+
+    commandBarGFX:addDrawable(bar)
+    commandBarGFX:hide()
+
+    game:GetService('UserInputService').InputBegan:Connect(function(inp,gpe)
+        if gpe and inp.KeyCode ~= Enum.KeyCode.Backquote then 
+            warn(`GPE: skipping...`)
+            return 
+        end
+        if inp.KeyCode == Enum.KeyCode.Backquote then
+            if showing then
+                commandBarGFX:hide()
+                showing = false
+            else
+                commandBarGFX:show()
+                bar:getFocus()
+                showing = true
+            end
+        end
+    end)
 end
 
 function ClientMain:debugButtons()
@@ -188,6 +209,10 @@ function ClientMain:Main()
 
     AssemblyChat:start()
     
+    game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+    print("Backpack disabled.")
+
+    ClientMain:commandBar()
     ClientMain:SetupRPC()
     ClientMain:debugButtons()
     ClientMain:CreateTitle()

@@ -88,7 +88,7 @@ function Text.new(options: TextOptions?): Text
     self.size = options and options.size or 18
     self.wrap = options and options.wrap or false
     self.uiSize = options and options.uiSize or nil
-    self.font = options and options.font or Enum.Font.Code
+    self.font = options and options.font or config.client.defaultFont
 
     -- silence this cause it's get messy
     dbg(`new Text, text="{options.text}" (id={self.id})`)

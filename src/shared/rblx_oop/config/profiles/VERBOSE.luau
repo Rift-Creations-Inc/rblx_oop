@@ -16,7 +16,8 @@ local Client = {
         checkInterval = 15,
         threshold = 2500,
         debugCmw = true,
-    }
+    },
+    defaultFont = Enum.Font.RobotoMono,
 }
 
 local Server = {

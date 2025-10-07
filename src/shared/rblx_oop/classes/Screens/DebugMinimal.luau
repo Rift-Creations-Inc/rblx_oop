@@ -5,6 +5,7 @@ local UserInputService = game:GetService("UserInputService")
 local screenShared = require(script.Parent.screenShared)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
+local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 
@@ -100,7 +101,7 @@ function DebugMinimal.setupLeftDrawables(self: DebugMinimal,fontColor: Color3)
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = Enum.Font.Code
+            font = config.Client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerLeft)
@@ -116,7 +117,7 @@ function DebugMinimal.setupRightDrawables(self: DebugMinimal, fontColor: Color3)
             pos = Vector2.new(0,0),
             color = fontColor,
             text = `<pending>`,
-            font = Enum.Font.Code
+            font = config.Client.defaultFont
         })
 
         self.graphics:addDrawable(drawable,self.containerRight)
@@ -176,7 +177,7 @@ function DebugMinimal.setupDrawables(self: DebugMinimal)
         pos = Vector2.new(0,1),
         color = Color3.fromRGB(66, 255, 97),
         text = SCREEN_LABEL,
-        font = Enum.Font.Code
+        font = config.client.defaultFont
     })
 
     self.graphics:addDrawable(bottomLabel)

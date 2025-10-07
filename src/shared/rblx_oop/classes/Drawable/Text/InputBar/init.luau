@@ -32,6 +32,11 @@ export type InputBarOptions = TextOptions & {
 export type InputBar = Text & {
     placeholder: string,
 	clearOnFocus: boolean,
+
+    getFocus: (
+        self: InputBar
+    ) -> InputBar,
+
 	_inputInstance: TextBox?,
 	events: InputBarCallbacks?,
 }
@@ -51,6 +56,13 @@ function InputBar.new(options: InputBarOptions?): InputBar
     self.events = options and options.events or {}
 
     dbg(`new InputBar, placeholder={self.placeholder} (id={self.id})`)
+    return self
+end
+
+function InputBar.getFocus(self: InputBar): InputBar
+    dbg(`capturing focus for InputBar (id={self.id})`)
+    self._inputInstance:CaptureFocus()
+
     return self
 end
 
