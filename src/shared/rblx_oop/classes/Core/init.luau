@@ -164,9 +164,11 @@ local function registerDefaults(core: Core)
     dbg(`register default pipes`)
     dbg("   PplayerAdded")
     dbg("   PplayerRemoving")
+    dbg("   sendServerChatMessage")
     core
         :registerPipe("PplayerAdded")
         :registerPipe("PplayerRemoving")
+        :registerPipe("sendServerChatMessage")
 
     core:addEventListener("playerAdded", function(plr: Player)
         -- send to pipe...

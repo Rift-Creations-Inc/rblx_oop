@@ -2,6 +2,7 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
+local AssemblyChat = require(script.Parent.AssemblyChat)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
@@ -164,11 +165,14 @@ function ClientMain:Main()
         end)
         :addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
+    AssemblyChat:start()
+    
     ClientMain:SetupRPC()
     ClientMain:debugButtons()
     ClientMain:CreateTitle()
     ClientMain:Time()
     ClientMain:SayHi()
+
 
     return
 end

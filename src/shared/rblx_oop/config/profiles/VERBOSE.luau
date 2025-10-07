@@ -14,7 +14,7 @@ local Client = {
     debugNotifications = true,
     memoryWatcher = {
         checkInterval = 15,
-        threshold = 2350,
+        threshold = 2500,
         debugCmw = true,
     }
 }

@@ -122,6 +122,14 @@ SharedVars.onReady(function()
         askToContinueGFX:destroy()
     end
 
+    Core:registerEvent("localPlayerChatted", game:GetService('Players').LocalPlayer.Chatted)
+
+    local RbxSystem: TextChannel = game.TextChatService:WaitForChild('TextChannels'):WaitForChild('RBXSystem')
+    Core:addEventListener("sendServerChatMessage",function(msg: string)
+	    RbxSystem:DisplaySystemMessage("[server] "..msg)
+    end)
+
+
     SharedVars.onChanged(function(k,v)
         print(`{k}={tostring(v)}`)
     end)
