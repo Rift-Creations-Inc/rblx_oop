@@ -1,5 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local InputBar = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.InputBar)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
@@ -18,7 +17,7 @@ function CommandClient:Main()
     local bar = InputBar.new({
         pos = Vector2.new(0,.75),
         size = 18,
-        uiSize = UDim2.fromScale(1, .05),
+        --uiSize = UDim2.fromScale(1, .05),
         backgroundColor = Color3.fromRGB(0,0,0),
         color = Color3.fromRGB(255,255,255),
         backgroundTransparency = 0,
@@ -29,7 +28,7 @@ function CommandClient:Main()
     local commandRet = Text.new({
         pos = Vector2.new(bar.position.X, bar.position.Y - 0.05),
         size = 18,
-        uiSize = UDim2.fromScale(1, .05),
+        --uiSize = UDim2.fromScale(1, .05),
         backgroundColor = Color3.fromRGB(0,0,0),
         color = Color3.fromRGB(255,255,255),
         backgroundTransparency = 0,
