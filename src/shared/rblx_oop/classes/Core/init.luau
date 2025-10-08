@@ -3,10 +3,10 @@
 
     - add replication to client
 
-
---]]
-
-
+    
+    --]]
+    
+    
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local AlreadyInitializedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.AlreadyInitializedException)
@@ -17,8 +17,7 @@ local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 local Info = require(script.info)
 local RunService = game:GetService("RunService")
 local dump = require(ReplicatedStorage.Shared.rblx_oop.runtime.core.dump)
-
-
+local Players = game:GetService('Players')
 
 type Info = Info.Info
 
@@ -131,7 +130,6 @@ local function checkIfInit()
 end
 
 local function registerDefaults(core: Core)
-    local Players = game:GetService('Players')
 
     dbg("register default events...")
     dbg("events to register: ")
@@ -191,20 +189,29 @@ local function LENGTH(t: { [any]: any})
     return index
 end
 
+local dumpsGenerated = 0
+local dumpsDisabled = false
 function Core.generateDump(self: Core): dump.CoreDump
-    dbg(`[!] a dump was just requested...`)
+    dbg(`[*] a dump was just requested...`)
+    --dbg(`[*] It is advised you do not generate a lot of core dumps, as they take up a lot of memory.`)
     
+    if dumpsDisabled then
+        warn(`[!] dumpsDisabled is true. More than 25 dumps were generated.`)
+        warn(`[!]   returning the 'nil' dump...`)
+        return dump.dumps["{00000000-0000-0000-0000-000000000000}"]
+    end
+
     if not config.global.doCoreDumps then
-        warn("config.global.doCoreDumps has prohibitted core dumps!")
-        warn("  returning the 'nil' dump...")
+        warn("[!] config.global.doCoreDumps has prohibitted core dumps!")
+        warn("[!]   returning the 'nil' dump...")
         return dump.dumps["{00000000-0000-0000-0000-000000000000}"]
     end
 
     local GUID = HttpService:GenerateGUID(true)
     local TIME = DateTime.now():ToIsoDate()
 
-    -- put [!] in front cause dumps are kinda important
-    dbg(`[!] generating a dump at {TIME}... (guid={GUID})`)
+    -- put [*] in front cause dumps are kinda important
+    dbg(`[*] generating a dump at {TIME}... (guid={GUID})`)
 
     local DUMP: dump.CoreDump = {
         dumpGuid = GUID,
@@ -223,10 +230,20 @@ function Core.generateDump(self: Core): dump.CoreDump
         listeners = self._listeners
 
     }
+    dumpsGenerated += 1
 
-    dbg(`[!] Saving this dump to the runtime dumps table...`)
+    dbg(`[*] Saving this dump to the runtime dumps table...`)
     table.insert(dump.dumps,DUMP)
     dump.latestDumpGuid = GUID
+
+    if dumpsGenerated > 5 then
+        warn('[!] It is advised you stop generating dumps as they take up a lot of memory. (dumpsGenerated > 5)')
+    end
+    if dumpsGenerated > 25 then
+        dumpsDisabled = true
+        -- so the user can actually see it
+        warn(`[!] ***** Dumps were just disabled to save memory. *****`)
+    end
 
     return DUMP
 end
