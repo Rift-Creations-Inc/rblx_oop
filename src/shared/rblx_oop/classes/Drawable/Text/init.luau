@@ -112,6 +112,7 @@ function Text.render(self: Text,parent: Instance): TextLabel
     label.BackgroundColor3 = Color3.new(0,0,0)
     label.Position = UDim2.fromScale(self.position.X, self.position.Y)
     label.AnchorPoint = self.anchor
+    label.TextColor3 = self.color
     label.Parent = parent
 
     --label.Size = UDim2.fromOffset(0,self.size + 2)

@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local AssemblyChat = require(script.Parent.AssemblyChat)
+local CommandClient = require(script.Parent.CommandClient)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
@@ -105,46 +106,6 @@ function ClientMain:SetupRPC()
     print(`done, RPC should now be set.`)
 end
 
-
-function ClientMain:commandBar()
-    local showing = false
-    local commandBarGFX = Graphics2D.new("commandBarGFX")
-    local bar = InputBar.new({
-        pos = Vector2.new(0,.85),
-        size = 18,
-        uiSize = UDim2.fromScale(1, .05),
-        backgroundColor = Color3.fromRGB(0,0,0),
-        placeholder = "hi",
-        clearOnFocus = true
-    })
-
-    local function _pressed()
-        print("enter pressed: "..self.text)
-    end
-
-    bar.events.onEnterPressed = _pressed
-
-    commandBarGFX:addDrawable(bar)
-    commandBarGFX:hide()
-
-    game:GetService('UserInputService').InputBegan:Connect(function(inp,gpe)
-        if gpe and inp.KeyCode ~= Enum.KeyCode.Backquote or inp.KeyCode == nil then 
-            warn(`GPE: skipping... {UserInputService:GetStringForKeyCode(inp.KeyCode)}`)
-            return 
-        end
-        if inp.KeyCode == Enum.KeyCode.Backquote then
-            if showing then
-                commandBarGFX:hide()
-                showing = false
-            else
-                commandBarGFX:show()
-                bar:getFocus()
-                showing = true
-            end
-        end
-    end)
-end
-
 function ClientMain:debugButtons()
     local function DUMP_CONFIGURATION()
         Notification.new("LOW", "rblx_oop configuration has been dumped\nto the console. press F9 to view.",8)
@@ -214,7 +175,7 @@ function ClientMain:Main()
     game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
     print("Backpack disabled.")
 
-    ClientMain:commandBar()
+    CommandClient:Main()
     ClientMain:SetupRPC()
     ClientMain:debugButtons()
     ClientMain:CreateTitle()
