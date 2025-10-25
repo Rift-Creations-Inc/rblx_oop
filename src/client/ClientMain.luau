@@ -8,7 +8,6 @@ local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
-local Error = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Error)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local ClientMain = {
@@ -57,7 +56,6 @@ function ClientMain:Time()
             task.wait(1)
         end
     end)
-
 end
 
 function ClientMain:CreateTitle()
@@ -198,27 +196,14 @@ function ClientMain:Main()
     
     game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
-    Error.new("test", "oh crap!")
-        :printStackTrace()
-
     CommandClient:Main()
     ClientMain.debugButtons()
     ClientMain.CreateTitle()
     ClientMain.Time()
     ClientMain.SayHi()
 
-    local function t1()
-        Error.new("test","oh")
-            :printStackTrace()
-    end
-
-    local function t2()
-        t1()
-    end
-
-    t2()
-
     task.wait(2.5)
+    Core:init()
     
     
     --print(`[CONFIGURATION] config.client.textSizeMultiplier={config.client.textSizeMultiplier}`)

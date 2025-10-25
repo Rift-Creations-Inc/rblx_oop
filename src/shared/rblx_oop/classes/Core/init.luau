@@ -253,6 +253,7 @@ function Core.init(): Core
         AlreadyInitializedException.new("Core is already initialized!")
         return
     end
+    
     CoreEventPipe = ReplicatedStorage.Shared.rblx_oop.runtime:FindFirstChild('CoreEventPipe') :: RemoteEvent?
     if not CoreEventPipe then
         local bridge = Instance.new("RemoteEvent")
