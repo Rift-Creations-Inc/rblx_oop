@@ -268,7 +268,7 @@ function DebugScreen.update(self: DebugScreen)
     local ping = math.floor((game:GetService('Players').LocalPlayer:GetNetworkPing() * 1000))
 
     local function getS(tag: Enum.DeveloperMemoryTag)
-        return Stats:GetMemoryUsageMbForTag(tag)
+        return Core.info().getMemoryInfo().getMbFromTag(tag)
     end
 
     local heap = math.floor(getS(Enum.DeveloperMemoryTag.LuaHeap))

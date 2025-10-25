@@ -17,18 +17,40 @@ end
 --[[
     @StaticClass
 --]]
-    
-local Notification = {}
+
+--[[
+    config = {
+        colors = {
+            debug = Color3.fromRGB(255, 255, 255),
+            low = Color3.fromRGB(14, 187, 255),
+            important = Color3.fromRGB(255, 157, 66),
+            urgent = Color3.fromRGB(255, 106, 106)
+        }
+    }
+]]
+
+local Notification = {
+    send = {},
+
+    config = {
+        colors = {
+            debug = Color3.fromRGB(255, 255, 255),
+            low = Color3.fromRGB(14, 187, 255),
+            important = Color3.fromRGB(255, 157, 66),
+            urgent = Color3.fromRGB(255, 106, 106)
+        }
+    },
+}
 Notification.__index = Notification
 
 local activeNotifs: { {text: Text.Text, height: number, id: string} } = {}
 local notifSpacing = 0.015
 
 local function respositionNotifications()
-    dbg(`attempting to resposition Notifications...`)
+    dbg(`attempting to resposition notifications...`)
 
     if #activeNotifs == 0 then
-        dbg(`   no notification to reposition... bailing out`)
+        dbg(`   no notifications to reposition... bailing out`)
         return
     end
 
@@ -42,13 +64,13 @@ local function respositionNotifications()
         end
         local yPos = baseY - (totalOffset / workspace.CurrentCamera.ViewportSize.Y)
         data.text:setPosition(Vector2.new(1,yPos))
-        dbg(`   repositioned  {data.id}`)
+        dbg(`   repositioned {data.id}`)
         --tweenTo(data.text, yPos)
     end
 end
 
 
-function Notification.createRawNotification(label: string, color: Color3,TEXT: string, timeR: number,server: boolean?)
+function Notification.send.raw(label: string, color: Color3,TEXT: string, timeR: number,server: boolean?)
     server = server or false
 
     local NOTIFICATION_NAME = `notification_{HttpService:GenerateGUID()}`
@@ -106,20 +128,46 @@ function Notification.createRawNotification(label: string, color: Color3,TEXT: s
     end)
 end
 
+function Notification.send.debug(text: string, timeR: number?, server: boolean)
+    if not config.client.debugNotifications then return end
+
+    timeR = timeR or 5
+
+    Notification.send.raw("DEBUG",Notification.config.colors.debug,text,timeR, server)
+end
+
+function Notification.send.low(text: string, timeR: number?, server: boolean)
+    timeR = timeR or 5
+
+    Notification.send.raw("LOW", Notification.config.colors.low, text, timeR, server)
+end
+
+function Notification.send.important(text: string, timeR: number?, server: boolean)
+    timeR = timeR or 5
+
+    Notification.send.raw("IMPORTANT", Notification.config.colors.important, text, timeR, server)
+end
+
+function Notification.send.urgent(text: string, timeR: number?, server: boolean)
+    timeR = timeR or 5
+
+    Notification.send.raw("URGENT", Notification.config.colors.urgent, text, timeR, server)
+end
 
 function Notification.new(ntype: "URGENT" | "LOW" | "IMPORTANT" | "DEBUG",text: string,timeR: number?,server: boolean?)
     timeR = timeR or 5
 
     if ntype == "URGENT" then
-        Notification.createRawNotification("URGENT", Color3.fromRGB(255, 106, 106), text, timeR,server)
-    elseif ntype == "IMPORTANT" then
-        Notification.createRawNotification("IMPORTANT", Color3.fromRGB(255, 157, 66), text, timeR,server)
-    elseif ntype == "LOW" then
-        Notification.createRawNotification("LOW", Color3.fromRGB(14, 187, 255), text, timeR,server)
-    elseif ntype == "DEBUG" then
-        if not config.client.debugNotifications then return end
+        Notification.send.urgent(text, timeR, server)
 
-        Notification.createRawNotification("DEBUG", Color3.fromRGB(255, 255, 255), text, timeR,server)
+    elseif ntype == "IMPORTANT" then
+        Notification.send.important(text, timeR, server)
+
+    elseif ntype == "LOW" then
+        Notification.send.low(text, timeR, server)
+
+    elseif ntype == "DEBUG" then
+        Notification.send.debug(text, timeR, server)
     end
 end
 
@@ -127,7 +175,7 @@ end
 Core
     :registerPipe("sendGlobalNotification")
     :addEventListener("sendGlobalNotification", function(ntype: string, txt: string, timeR: number)
-        Notification.new(ntype, txt, timeR,true)
+        Notification.new(ntype, txt, timeR, true)
     end)
 
 return Notification

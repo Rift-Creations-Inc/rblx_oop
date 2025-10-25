@@ -8,6 +8,7 @@ local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local Stats = game:GetService("Stats")
 local UserInputService = game:GetService("UserInputService")
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
@@ -54,15 +55,29 @@ local function writeCmw(txt: {string})
 end
 
 local function clientMemoryWatcher()
+    if not config.client.memoryWatcher.enabled then
+        warn(`[ClientMemoryWatcher] config.client.memoryWatcher.enabled is FALSE!`)
+        return
+    end
+    
     while true do
         writeCmw("running a check...")
+        local passed = true
         local mem: number = Core.info().getMemoryInfo().totalMb()
         if mem > config.client.memoryWatcher.threshold then
-            -- adjust to server or std debug keymap(s)
+            passed = false
+        end
+        
+        if passed then
+            writeCmw("  passed!")
+        else
+            writeCmw("  failed!")
+
             local keyToPress = "F3"
             if RunService:IsStudio() then
                 keyToPress = "F4"
             end
+            
             warn(`[ClientMemoryWatcher] sending notification... (mem={mem}MB)`)
             Notification.new(
                 "URGENT",
@@ -128,11 +143,6 @@ SharedVars.onReady(function()
     Core:addEventListener("sendServerChatMessage",function(msg: string)
 	    RbxSystem:DisplaySystemMessage("[server] "..msg)
     end)
-
-
-    SharedVars.onChanged(function(k,v)
-        print(`{k}={tostring(v)}`)
-    end)
     
     -- Register debug screens
     Notification.new("DEBUG","register debug slave screens...")
@@ -144,6 +154,13 @@ SharedVars.onReady(function()
     Notification.new("DEBUG", "All debug slave screens have been registered - starting DebugMaster")
     DebugMaster.start()
 
+    if not Stats.MemoryTrackingEnabled then
+        Notification.new("DEBUG", 
+            "game.Stats.MemoryTrackingEnabled is FALSE.\n"..
+            "If you plan on using memory tracking functions\n"..
+            "restart the roblox client with micro profiler open\n",10)
+    end
+
     if screenShared.keyStyle == "studio" then
         Notification.new("IMPORTANT",`Your debug key map is set to "studio"\nDebug keys may be different - press F2 to view keys.`, 6)
     else
@@ -152,10 +169,8 @@ SharedVars.onReady(function()
     
     -- Listen to updates
     Core:addEventListener("sharedVarsUpdate", function(k,v)
-        write(`set {k}={tostring(v)}`)
+        write(`sharedVarsUpdate: set {k}={tostring(v)}`)
     end)
-
-    _PRINT_CONFIGURATION()
     
     write(`spawnning a task to run client main so we don't halt the runner...`)
     

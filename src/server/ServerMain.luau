@@ -48,7 +48,6 @@ function ServerMain:Main()
         :addEventListener("playerRemoving", ServerMain.onPlayerRemoving)
         :addEventListener("serverClosing",  ServerMain.onServerClosing)
     
-    print('dumping...')
     task.wait(2)
 end
 

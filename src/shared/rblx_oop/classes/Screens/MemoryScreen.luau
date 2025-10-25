@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService('RunService')
 local Stats = game:GetService("Stats")
 local UserInputService = game:GetService("UserInputService")
+local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local screenShared = require(script.Parent.screenShared)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
@@ -207,7 +208,7 @@ function MemoryScreen.update(self: MemoryScreen)
             local idx = i + j
             if memoryTags[idx] then
                 local tag = memoryTags[idx]
-                local memMb = Stats:GetMemoryUsageMbForTag(tag)
+                local memMb = Core.info().getMemoryInfo().getMbFromTag(tag)
                 local percent = totalMem > 0 and (memMb / totalMem * 100) or 0
 
                 local color: Color3

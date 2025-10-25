@@ -85,7 +85,7 @@ function Text.new(options: TextOptions?): Text
     self.backgroundTransparency = options and options.backgroundTransparency or 0.5
     self.textXalign = options and options.textXalign or Enum.TextXAlignment.Left
     self.textYalign = options and options.textYalign or Enum.TextYAlignment.Top
-    self.size = options and options.size or 18
+    self.size = (options and options.size or 18) * config.client.textSizeMultiplier
     self.wrap = options and options.wrap or false
     self.uiSize = options and options.uiSize or nil
     self.font = options and options.font or config.client.defaultFont

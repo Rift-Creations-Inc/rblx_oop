@@ -260,7 +260,7 @@ function DebugMinimal.update(self: DebugMinimal)
     local jobId = game.JobId
 
     local function getS(tag: Enum.DeveloperMemoryTag)
-        return game:GetService('Stats'):GetMemoryUsageMbForTag(tag)
+        return Core.info().getMemoryInfo().getMbFromTag(tag)
     end
 
     local mem = math.floor(info.memory.totalMb())

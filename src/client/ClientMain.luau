@@ -1,16 +1,14 @@
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
-local AssemblyChat = require(script.Parent.AssemblyChat)
 local CommandClient = require(script.Parent.CommandClient)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
 local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.Button)
-local InputBar = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.InputBar)
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
+local Error = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Error)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 
 local ClientMain = {
@@ -47,7 +45,7 @@ function ClientMain:Time()
     local creditsUi = Text.new({
         text = `idk`,
         pos = Vector2.new(1,1),
-        size = 18,
+        size = 15,
         textXalign = Enum.TextXAlignment.Right
     })
 
@@ -79,21 +77,50 @@ function ClientMain:SayHi()
     local plr = game:GetService("Players").LocalPlayer
     local helloText = Text.new({
         text = `Hello, {plr.DisplayName}!`,
-        pos = Vector2.new(.5,.95),
+        pos = Vector2.new(.5,.90),
         size = 25,
-        textXalign = Enum.TextXAlignment.Center
+        textXalign = Enum.TextXAlignment.Left
     })
 
     ClientMain.GFX:addDrawable(helloText)
     task.wait(2)
-    helloText:setText(`This game serves as a test of rblx_oop,`)
+    helloText:setText(`idk what to show so here is the current configuration...`)
     task.wait(2)
-    helloText:setText("rblx_oop is inspired by Java but it's for Luau and Roblox! (The text you're seeing right now is created by rblx_oop!)")
-    task.wait(3)
-    helloText:setText(`That's all I have to say.`)
-    task.wait(1.5)
-    helloText:setText(`Enjoy this demo!`)
-    task.wait(1)
+
+    local function table_to_string(tbl, indent, seen, depth_limit)
+        indent = indent or 0
+        seen = seen or {}
+        depth_limit = depth_limit or 5
+
+        if type(tbl) ~= "table" then
+            return string.rep("  ", indent) .. tostring(tbl)
+        end
+
+        if seen[tbl] then
+            return string.rep("  ", indent) .. "*recursive*"
+        end
+        seen[tbl] = true
+
+        if indent >= depth_limit then
+            return string.rep("  ", indent) .. "... (depth limit reached)"
+        end
+
+        local lines = {}
+        for k, v in pairs(tbl) do
+            local key_str = tostring(k)
+            if type(v) == "table" then
+                table.insert(lines, string.rep("  ", indent) .. key_str .. " = {")
+                table.insert(lines, table_to_string(v, indent + 1, seen, depth_limit))
+                table.insert(lines, string.rep("  ", indent) .. "}")
+            else
+                table.insert(lines, string.rep("  ", indent) .. key_str .. " = " .. tostring(v))
+            end
+        end
+        return table.concat(lines, "\n")
+    end
+
+    helloText:setText(table_to_string(config))
+    task.wait(5)
     helloText:destroy()
 end
 
@@ -164,23 +191,37 @@ function ClientMain:Main()
         :addEventListener("PplayerRemoving", function(plr: Player)
             Notification.new("LOW", `{plr.Name} has left!`)
         end)
-        :addEventListener('sharedVarsUpdate', function(k,v)
-            print(k,v)
-        end)
         :addEventListener("clientGameSettings", ClientMain.gameSettingChanged)
 
 
-    AssemblyChat:start()
+    --AssemblyChat:start()
     
     game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-    print("Backpack disabled.")
+
+    Error.new("test", "oh crap!")
+        :printStackTrace()
 
     CommandClient:Main()
-    ClientMain:SetupRPC()
-    ClientMain:debugButtons()
-    ClientMain:CreateTitle()
-    ClientMain:Time()
+    ClientMain.debugButtons()
+    ClientMain.CreateTitle()
+    ClientMain.Time()
+    ClientMain.SayHi()
 
+    local function t1()
+        Error.new("test","oh")
+            :printStackTrace()
+    end
+
+    local function t2()
+        t1()
+    end
+
+    t2()
+
+    task.wait(2.5)
+    
+    
+    --print(`[CONFIGURATION] config.client.textSizeMultiplier={config.client.textSizeMultiplier}`)
     return
 end
 

@@ -24,6 +24,8 @@ function Throwable.printStackTrace(self: Throwable)
         warn(`\tat {v}`)
     end
     print(` `)
+    -- do this so the user can clearly see it
+    task.wait(1.2)
 end
 
 function Throwable.new(name: string, message: string) : Throwable

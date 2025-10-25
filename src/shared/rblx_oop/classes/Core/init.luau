@@ -18,6 +18,7 @@ local Info = require(script.info)
 local RunService = game:GetService("RunService")
 local dump = require(ReplicatedStorage.Shared.rblx_oop.runtime.core.dump)
 local Players = game:GetService('Players')
+local CoreDumpsDisabledException = require(script.CoreDumpsDisabledException)
 
 type Info = Info.Info
 
@@ -182,7 +183,7 @@ end
 local function LENGTH(t: { [any]: any})
     local index = 0
 
-    for i, _ in t do
+    for _, _ in t do
         index += 1
     end
 
@@ -195,15 +196,10 @@ function Core.generateDump(self: Core): dump.CoreDump
     dbg(`[*] a dump was just requested...`)
     --dbg(`[*] It is advised you do not generate a lot of core dumps, as they take up a lot of memory.`)
     
-    if dumpsDisabled then
-        warn(`[!] dumpsDisabled is true. More than 25 dumps were generated.`)
-        warn(`[!]   returning the 'nil' dump...`)
-        return dump.dumps["{00000000-0000-0000-0000-000000000000}"]
-    end
-
-    if not config.global.doCoreDumps then
-        warn("[!] config.global.doCoreDumps has prohibitted core dumps!")
-        warn("[!]   returning the 'nil' dump...")
+    if not config.global.doCoreDumps or dumpsDisabled then
+        CoreDumpsDisabledException.new(
+            "attempted to generate a core dump while dumping core is prohibitted! returning 'nil' dump..."
+        )
         return dump.dumps["{00000000-0000-0000-0000-000000000000}"]
     end
 

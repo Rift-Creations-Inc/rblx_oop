@@ -1,6 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Stats = game:GetService('Stats')
+local MemoryTrackingDisabledException = require(script.Parent.MemoryTrackingDisabledException)
 local ServerOnlyException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.ServerOnlyException)
 
 --[[
@@ -144,14 +145,36 @@ function Info.getNetworkInfoFull(): NetworkInfoFull
     return self
 end
 
+local function _impl_getMbFromTag(tag: Enum.DeveloperMemoryTag): number
+    if not Stats.MemoryTrackingEnabled then
+        --MemoryTrackingDisabledException.new("Attempted to call getMbFromTag() while memory tracking is disabled - returning 0...")
+        return 0
+    end
+
+    return Stats:GetMemoryUsageMbForTag(tag)
+end
+
+local function _impl_totalMb(): number
+    if not Stats.MemoryTrackingEnabled then
+        --MemoryTrackingDisabledException.new("Attempted to call getMemoryInfo() while memory tracking is disabled - returning 0...")
+        return 0
+    end
+
+    return Stats:GetTotalMemoryUsageMb()
+end
+
 function Info.getMemoryInfo(): MemoryInfo
+    if not Stats.MemoryTrackingEnabled then
+        MemoryTrackingDisabledException.new("Memory tracking is disabled, functions will return 0.")
+    end
+
     local self: MemoryInfo = {
         getMbFromTag = function(tag: Enum.DeveloperMemoryTag): number
-            return Stats:GetMemoryUsageMbForTag(tag)
+            return _impl_getMbFromTag(tag)
         end,
 
         totalMb = function(): number
-            return Stats:GetTotalMemoryUsageMb()
+            return _impl_totalMb()
         end
     }
 

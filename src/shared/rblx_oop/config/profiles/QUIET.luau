@@ -14,10 +14,12 @@ local Client = {
     debugNotifications = false,
     memoryWatcher = {
         checkInterval = 15,
-        threshold = 2500,
-        debugCmw = false
+        threshold = 3000,
+        debugCmw = false,
+        enabled = true,
     },
     defaultFont = Enum.Font.RobotoMono,
+    textSizeMultiplier = 1,
 }
 
 local Server = {
@@ -33,6 +35,8 @@ local Config = {
     ['client'] = Client,
     ['server'] = Server,
     ['global'] = Global,
+
+    ['profileName'] = script.Name
 }
 
 return Config
