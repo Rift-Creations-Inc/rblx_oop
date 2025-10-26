@@ -372,7 +372,7 @@ function Instructions.SHR(args: {string})
     regs[dst:lower()] = bit32.rshift(dstVal, amt)
 end
 
-function Instructions.SYSCALL(args: {string})
+function Instructions.SYSCALL(_: {string})
     local function sys_write()
         local fd: number = (regs.rdi :: number)
         local buf: string = (regs.rsi :: string)
@@ -408,7 +408,7 @@ function Instructions.SYSCALL(args: {string})
     ASM_ERR("Unknown or unrecognized syscall: RAX="..regs.rax)
 end
 
-function Instructions._DUMPREGS(args: {string})
+function Instructions._DUMPREGS(_: {string})
     for k,v in pairs(regs) do
         ASM_OUT(`_DUMPREGS: {k:upper()}: {v}`)
     end
@@ -424,7 +424,7 @@ function Instructions._PRINT(args: {string})
     ASM_OUT(`_PRINT: {dst:upper()}={regs[dst:lower()]}`)
 end
 
-function Instructions.NOP(args: {string})
+function Instructions.NOP(_: {string})
     return
 end
 

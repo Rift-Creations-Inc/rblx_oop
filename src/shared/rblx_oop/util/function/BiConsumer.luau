@@ -28,3 +28,5 @@ local function newBiConsumer<T, U>(f: (T, U) -> ()): BiConsumer<T, U>
 
 	return self
 end
+
+return newBiConsumer

@@ -25,7 +25,9 @@ function Throwable.printStackTrace(self: Throwable)
     end
     print(` `)
     -- do this so the user can clearly see it
-    task.wait(1.2)
+    if coroutine.isyieldable() then
+        task.wait(1.2)
+    end
 end
 
 function Throwable.new(name: string, message: string) : Throwable

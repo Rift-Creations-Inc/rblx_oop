@@ -1,7 +1,9 @@
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterPlayer = game:GetService("StarterPlayer")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
+local Testing = require(StarterPlayer.StarterPlayerScripts.Client.Tests.Testing)
 local CommandClient = require(script.Parent.CommandClient)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
@@ -9,6 +11,12 @@ local Button = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text.B
 local Graphics2D = require(ReplicatedStorage.Shared.rblx_oop.classes.Graphics2D)
 local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notification)
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
+    
+local SimpleList = require(ReplicatedStorage.Shared.rblx_oop.lang.SimpleList)
+type SimpleList<E> = SimpleList.SimpleList<E>
+
+local Function = require(ReplicatedStorage.Shared.rblx_oop.util["function"].THIS)
+local Consumer = Function.Consumer
 
 local ClientMain = {
     GFX = Graphics2D.new('ClientMain'),
@@ -196,15 +204,22 @@ function ClientMain:Main()
     
     game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
+    task.wait(3)
+
     CommandClient:Main()
     ClientMain.debugButtons()
     ClientMain.CreateTitle()
     ClientMain.Time()
-    ClientMain.SayHi()
+    --ClientMain.SayHi()
 
-    task.wait(2.5)
-    Core:init()
-    
+    local myList: SimpleList.SimpleList<string> = SimpleList.new()
+    myList:add("string")
+    myList:add("hey!")
+    myList:forEach(Consumer(function(x: string)
+        print(`forEach: {x}`)
+    end))
+
+    Testing()
     
     --print(`[CONFIGURATION] config.client.textSizeMultiplier={config.client.textSizeMultiplier}`)
     return
