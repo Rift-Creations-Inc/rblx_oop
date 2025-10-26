@@ -2,7 +2,7 @@
 export type IBaseFeature<N> = {
     _baseFeatureName: N,
 
-    _langFeature: true
+    _langFeature: true,
 }
 
 return {}

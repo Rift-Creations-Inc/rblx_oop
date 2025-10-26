@@ -215,6 +215,7 @@ function ClientMain:Main()
     local myList: SimpleList.SimpleList<string> = SimpleList.new()
     myList:add("string")
     myList:add("hey!")
+    
     myList:forEach(Consumer(function(x: string)
         print(`forEach: {x}`)
     end))
