@@ -4,6 +4,7 @@ local ResourceT = require(ReplicatedStorage.Shared.rblx_oop.lang.ResourceT)
     local CountedResouce = ResourceT.CountedResource
     
 local SimpleList = require(ReplicatedStorage.Shared.rblx_oop.lang.SimpleList)
+local RandomGeneratorFactory = require(ReplicatedStorage.Shared.rblx_oop.util.RandomGeneratorFactory)
 type SimpleList<E> = SimpleList.SimpleList<E>
 
 local Function = require(ReplicatedStorage.Shared.rblx_oop.util["function"].THIS)
@@ -20,7 +21,7 @@ local function printer()
     if list:empty() then return end
 
     list:forEach(Consumer(function(x: string)
-        print(`{x}`)
+        print(`list:forEach: {x}`)
     end))
 
     ref:release()
@@ -39,7 +40,28 @@ return function()
     printer()
     myWordRes
         :release()
-        :getRefrenceCount() -- should fail
+
+    warn('done')
+
+    local function generate(x: RandomGeneratorFactory.RNGName)
+        local gen = RandomGeneratorFactory.new():of(x)
+    
+        print(`[generate] generating with {x}`)
+        print(`[generate]       int:   {gen:nextInt()}`)
+        print(`[generate]       int:   {gen:nextInt()}`)
+        print(`[generate]     float:   {gen:nextFloat()}`)
+        print(`[generate]     float:   {gen:nextFloat()}`)
+        print(`[generate]   boolean:   {gen:nextBool()}`)
+        print(`[generate]   boolean:   {gen:nextBool()}`)
+    end
+
+    generate("SimpleRng")
+    generate("SimpleRng")
+    generate("SimpleRng")
+
+    generate("Xoshiro256PlusPlus")
+    generate("Xoshiro256PlusPlus")
+    generate("Xoshiro256PlusPlus")
 
     warn(`done`)
 end

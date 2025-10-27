@@ -21,6 +21,12 @@ local DebugSharedVars = require(ReplicatedStorage.Shared.rblx_oop.classes.Screen
 local MemoryScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.MemoryScreen)
 local screenShared = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.screenShared)
 
+local function generateSeed(): number
+    local t = os.clock() * 1e9
+    local pid = game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.UserId or math.random(1, 1e6)
+    local r = Random.new():NextInteger(0, 2^31 - 1)
+    return bit32.bxor(math.floor(t), pid, r)
+end
 
 local function write(txt: string)
     if config.client.debugClientMainRunner then
@@ -36,6 +42,7 @@ write(`done`)
 
 -- put it down here so Core can do it's stuff first
 local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
+
 
 SharedVars.waitForLoad()
 
@@ -145,14 +152,18 @@ SharedVars.onReady(function()
     end)
     
     -- Register debug screens
-    Notification.new("DEBUG","register debug slave screens...")
-    DebugMaster.registerSlaveScreen(DebugMinimal.new())
-    DebugMaster.registerSlaveScreen(DebugScreen.new())
-    DebugMaster.registerSlaveScreen(MemoryScreen.new())
-    DebugMaster.registerSlaveScreen(DebugServerInfo.new())
-    DebugMaster.registerSlaveScreen(DebugSharedVars.new())
-    Notification.new("DEBUG", "All debug slave screens have been registered - starting DebugMaster")
-    DebugMaster.start()
+    if game:GetService('Stats').MemoryTrackingEnabled == true then
+        Notification.new("DEBUG","register debug slave screens...")
+        DebugMaster.registerSlaveScreen(DebugMinimal.new())
+        DebugMaster.registerSlaveScreen(DebugScreen.new())
+        DebugMaster.registerSlaveScreen(MemoryScreen.new())
+        DebugMaster.registerSlaveScreen(DebugServerInfo.new())
+        DebugMaster.registerSlaveScreen(DebugSharedVars.new())
+        Notification.new("DEBUG", "All debug slave screens have been registered - starting DebugMaster")
+        DebugMaster.start()
+    else
+        Notification.new("URGENT", 'unable to register debug slave screens\nmemory track is disabled!\nrestart client w/ micro profiler to fix')
+    end
 
     if not Stats.MemoryTrackingEnabled then
         Notification.new("DEBUG", 

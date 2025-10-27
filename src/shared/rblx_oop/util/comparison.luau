@@ -1,7 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Predicate = require(ReplicatedStorage.Shared.rblx_oop.util['function'].Predicate)
 
-
 local isEven = Predicate(function(x: number)
     return x % 2 == 0
 end)
