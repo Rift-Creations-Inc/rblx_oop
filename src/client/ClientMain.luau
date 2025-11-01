@@ -3,7 +3,6 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
-local Testing = require(StarterPlayer.StarterPlayerScripts.Client.Tests.Testing)
 local ThreadTest = require(StarterPlayer.StarterPlayerScripts.Client.Tests.ThreadTest)
 local CommandClient = require(script.Parent.CommandClient)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
@@ -14,10 +13,8 @@ local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notificat
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
     
 local SimpleList = require(ReplicatedStorage.Shared.rblx_oop.lang.SimpleList)
+local Thread = require(ReplicatedStorage.Shared.rblx_oop.lang.Thread.Thread)
 type SimpleList<E> = SimpleList.SimpleList<E>
-
-local Function = require(ReplicatedStorage.Shared.rblx_oop.util["function"].THIS)
-local Consumer = Function.Consumer
 
 local ClientMain = {
     GFX = Graphics2D.new('ClientMain'),
@@ -188,6 +185,9 @@ end
 
 local lastPlr
 function ClientMain:Main()
+
+    warn(`inside thread {Thread.current():name()}`)
+
     -- piped version of playerAdded
     Core
         :addEventListener("PplayerAdded", function(plr: Player)

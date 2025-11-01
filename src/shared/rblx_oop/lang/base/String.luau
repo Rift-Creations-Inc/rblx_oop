@@ -1,8 +1,7 @@
 
-local HttpService = game:GetService("HttpService")
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RIterator = require(script.Parent.RIterator)
-local NotImplementedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.NotImplementedException)
 local Safe = require(script.Parent.Safe)
 local Vec = require(script.Parent.Vec)
 local u8 = require(ReplicatedStorage.Shared.rblx_oop.lang.base.primitiveTypes.u8)

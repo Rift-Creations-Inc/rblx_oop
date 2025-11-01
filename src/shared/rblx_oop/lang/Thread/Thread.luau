@@ -5,7 +5,6 @@ local ResourceT = require(ReplicatedStorage.Shared.rblx_oop.lang.ResourceT)
 local Option = require(ReplicatedStorage.Shared.rblx_oop.lang.base.Option)
 local Result = require(ReplicatedStorage.Shared.rblx_oop.lang.base.Result)
 local Safe = require(ReplicatedStorage.Shared.rblx_oop.lang.base.Safe)
-local SafeFn = require(ReplicatedStorage.Shared.rblx_oop.lang.base.SafeFn)
 local String = require(ReplicatedStorage.Shared.rblx_oop.lang.base.String)
 local NonZero = require(ReplicatedStorage.Shared.rblx_oop.lang.base.primitiveTypes.NonZero)
 local Parker = require(ReplicatedStorage.Shared.rblx_oop.lang.sync.Parker)
@@ -106,6 +105,8 @@ local Thread = {
 }
 Thread.__index = Thread
 
+local coroutineToThread = setmetatable({}, { __mode = "k" })
+
 function Thread.new(id: ThreadId, _name: Option<String>): Thread
     local name = _name.isSome and _name:unwrap():asStr() or "unnamed"
 
@@ -176,7 +177,7 @@ end
 
 function BuilderImpl.spawn(self: Builder, fn: () -> any): Thread
     _dbgb(`spawning new thread`)
-    local _id = SimpleRng.new(1042):nextInt()
+    local _id = SimpleRng.new(1024):nextInt()
     local id = NonZero(_id)
     local thread = Thread.new(id,self._name)
 
@@ -195,6 +196,8 @@ function BuilderImpl.spawn(self: Builder, fn: () -> any): Thread
         thread:unpark()
     end)
 
+    coroutineToThread[co] = thread
+
     thread._task = co
     task.spawn(function()
         coroutine.resume(co)
@@ -209,6 +212,38 @@ function Builder.new(): Builder
         _name = None,
         _onExcept = None
     }, BuilderImpl)
+end
+
+function Thread.current(): Thread
+    local co = coroutine.running()
+    if co == nil then
+        error(`Thread::current() called outside of coroutine thread!`)
+    end
+    local thread = coroutineToThread[co]
+    if not thread then
+        error(`Thread::current() called on unknown coroutine!`)
+    end
+    return thread
+end
+
+function Thread.register(name: string?): Thread
+    local co = coroutine.running()
+    if not co then
+        error(`Thread::current() called outside of coroutine thread!`)
+    end
+
+    local existing = coroutineToThread[co]
+    if existing then
+        return existing
+    end
+
+    local newId = NonZero(SimpleRng.new():nextInt(1,1024))
+    local tname = name and String.from(name) or String.from("main")
+
+    local thread = Thread.new(newId, Some(tname))
+    coroutineToThread[co] = thread
+
+    return thread
 end
 
 function Thread.spawn(f: () -> (),name: string?): Thread

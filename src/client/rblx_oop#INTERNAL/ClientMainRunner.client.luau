@@ -22,10 +22,10 @@ local DebugServerInfo = require(ReplicatedStorage.Shared.rblx_oop.classes.Screen
 local DebugSharedVars = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.DebugSharedVars)
 local MemoryScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.MemoryScreen)
 local screenShared = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.screenShared)
-local Exception = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception)
 local ThreadException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.ThreadException)
 local Thread = require(ReplicatedStorage.Shared.rblx_oop.lang.Thread.Thread)
-local String = require(ReplicatedStorage.Shared.rblx_oop.lang.base.String)
+
+Thread.register("rblx_oop.internal.ClientMainRunner")
 
 local function write(txt: string)
     if config.client.debugClientMainRunner then
@@ -46,9 +46,7 @@ local SharedVars = require(ReplicatedStorage.Shared.rblx_oop.runtime.SharedVars)
 SharedVars.waitForLoad()
 
 -- Wait for player to exist
-local player = Players.LocalPlayer or Players.PlayerAdded:Wait()
-local playerScripts = player.PlayerScripts
-local ClientMainScript = playerScripts.Client.ClientMain
+local _player = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
 local function _PRINT_CONFIGURATION()
     write(`Printing configuration as json...`)
@@ -186,6 +184,7 @@ SharedVars.onReady(function()
     
     Thread.spawn(function()
         write(`starting client memory watcher`)
+        clientMemoryWatcher()
     end,`ClientMemoryWatcherThread`)
 
     Thread.Builder.new()
