@@ -13,7 +13,6 @@ local Notification = require(ReplicatedStorage.Shared.rblx_oop.classes.Notificat
 local config = require(ReplicatedStorage.Shared.rblx_oop.config)
     
 local SimpleList = require(ReplicatedStorage.Shared.rblx_oop.lang.SimpleList)
-local Thread = require(ReplicatedStorage.Shared.rblx_oop.lang.Thread.Thread)
 type SimpleList<E> = SimpleList.SimpleList<E>
 
 local ClientMain = {
@@ -185,8 +184,6 @@ end
 
 local lastPlr
 function ClientMain:Main()
-
-    warn(`inside thread {Thread.current():name()}`)
 
     -- piped version of playerAdded
     Core

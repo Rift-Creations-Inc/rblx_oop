@@ -31,7 +31,7 @@ local Global = {
     debugCoreClass = false,
     traceStyle = "java",
     useFullTrace = false,
-    debugThreads = true
+    debugThreads = false
 }
 
 local Config = {

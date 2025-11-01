@@ -3,7 +3,7 @@ local Thread = require(ReplicatedStorage.Shared.rblx_oop.lang.Thread.Thread)
 
 
 local function myCoolFunction()
-    print(`hi`)
+    return 54
 end
 
 
