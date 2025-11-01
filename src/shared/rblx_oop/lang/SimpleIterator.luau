@@ -1,6 +1,6 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Iterator = require(ReplicatedStorage.Shared.rblx_oop.util.Interator)
+local Iterator = require(ReplicatedStorage.Shared.rblx_oop.util.Iterator)
 
 type Iterator<E> = Iterator.Iterator<E>
 

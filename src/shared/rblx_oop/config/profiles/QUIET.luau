@@ -29,6 +29,8 @@ local Server = {
 local Global = {
     doCoreDumps = true,
     debugCoreClass = false,
+    traceStyle = "java",
+    useFullTrace = false
 }
 
 local Config = {

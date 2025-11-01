@@ -6,7 +6,7 @@ local IFeature = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.IFeat
 
 
 type IBaseFeature<N> = IBaseFeature.IBaseFeature<N>
-type IFeature<S,N> = IFeature.IFeature<S,N>
+type IFeature<S,N> = IFeature.IFeature<N>
 
 local function _wrn(txt: string,t: string)
     if not debugNatives then return end
@@ -35,7 +35,7 @@ export type WeakResource<T> = {
     getWeakCount: (
         self: WeakResource<T>
     ) -> number
-}
+} & IBaseFeature<"WeakResource">
 
 export type CountedResource<T> = {
     clone: (
@@ -118,7 +118,7 @@ function CountedResource.new<T>(value: T): CountedResource<T>
                                 return function() end
                             end
                         })
-                        _wrn("all refrences have been dropped - dropping this CountedResource", "CountedResource")
+                        _inf("no more refrences - dropping this CountedResource", "CountedResource")
                     end
                 end
             end,
@@ -176,7 +176,7 @@ function WeakResource.new<T>(inner: Inner<T>, makeCounted: () -> CountedResource
                         return function() end
                     end
                 })
-                _wrn("cleaned up after last weak refrence - fully dropped","WeakResource")
+                _inf("no more refrences - dropping this WeakResource...","WeakResource")
             end
         end,
 

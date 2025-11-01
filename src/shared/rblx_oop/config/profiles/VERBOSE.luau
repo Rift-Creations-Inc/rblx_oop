@@ -29,6 +29,8 @@ local Server = {
 local Global = {
     doCoreDumps = true,
     debugCoreClass = true,
+    traceStyle = "tree",
+    useFullTrace = false
 }
 
 local Config = {

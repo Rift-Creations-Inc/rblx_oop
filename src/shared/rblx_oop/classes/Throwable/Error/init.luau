@@ -10,7 +10,7 @@ export type Error = Throwable.Throwable & {
 
 local Error = setmetatable({}, Throwable)
 Error.__index = Error
-setmetatable(Error, { __index = Throwable})
+setmetatable(Error, { __index = Throwable} )
 
 --[[ @Override ]]
 function Error.printStackTrace(self: Error)
@@ -20,7 +20,7 @@ function Error.printStackTrace(self: Error)
     warn(self:toString())
     local txt: string = `{self:toString()}\n`
     for _, v in self.stacktrace:toStringArray() do
-        txt ..= `\tat {v}`
+        txt ..= `\t{v}`
     end
 
     local text = Text.new({
@@ -40,6 +40,7 @@ function Error.printStackTrace(self: Error)
 
     text:destroy()
     scr:destroy()
+
 end
 
 function Error.new(message: string) : Error

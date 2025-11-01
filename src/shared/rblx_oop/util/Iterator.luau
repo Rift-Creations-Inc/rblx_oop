@@ -3,7 +3,6 @@ local Consumer = require(ReplicatedStorage.Shared.rblx_oop.util['function'].Cons
 
 local IBaseFeature = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.IBaseFeature)
 local IFeature = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.IFeature)
-
 type IBaseFeature<N> = IBaseFeature.IBaseFeature<N>
 type IFeature<N> = IFeature.IFeature<N>
 

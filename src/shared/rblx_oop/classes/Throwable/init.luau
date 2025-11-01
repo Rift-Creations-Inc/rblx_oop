@@ -21,7 +21,7 @@ end
 function Throwable.printStackTrace(self: Throwable)
     warn(self:toString())
     for _, v in self.stacktrace:toStringArray() do
-        warn(`\tat {v}`)
+        warn(`\t{v}`)
     end
     print(` `)
     -- do this so the user can clearly see it

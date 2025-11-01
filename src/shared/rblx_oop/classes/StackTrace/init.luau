@@ -1,4 +1,6 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local config = require(ReplicatedStorage.Shared.rblx_oop.config)
 local StackTraceElement = require(script.Parent.StackTraceElement)
 
 type StackTraceElement = StackTraceElement.StackTraceElement
@@ -30,6 +32,10 @@ StackTrace.__index = StackTrace
 function StackTrace.capture(skip: number?): StackTrace
     local elms = {}
     local level = (skip or 2)
+    
+    if config.global.useFullTrace then
+        level = 0
+    end
 
     while true do
         local src = debug.info(level,'s')
@@ -47,8 +53,8 @@ end
 
 function StackTrace.toStringArray(self: StackTrace): { string }
     local arr = {}
-    for _, el in ipairs(self.elements) do
-        table.insert(arr,el:toString())
+    for i, el in ipairs(self.elements) do
+        table.insert(arr,el:toString( i - 1 ))
     end
     return arr
 end
@@ -61,7 +67,7 @@ end
 
 function StackTrace.print(self: StackTrace)
     for _, el in ipairs(self.elements) do
-        print(`\t at {el:toString()}`)
+        print(`\t{el:toString()}`)
     end
 end
 

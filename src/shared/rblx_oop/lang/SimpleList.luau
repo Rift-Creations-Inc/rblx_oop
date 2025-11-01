@@ -1,12 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local NotImplementedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.NotImplementedException)
 local SimpleIterator = require(script.Parent.SimpleIterator)
-local Interable = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.Interable)
+local Iterable = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.Iterable)
 local Predicate = require(ReplicatedStorage.Shared.rblx_oop.util['function'].Predicate)
 local Consumer = require(ReplicatedStorage.Shared.rblx_oop.util['function'].Consumer)
 
 type Consumer<T> = Consumer.Consumer<T>
-type Interable<T> = Interable.Iterable<T>
+type Iterable<T> = Iterable.Iterable<T>
 type SimpleIterator<E> = SimpleIterator.SimpleIterator<E>
 type Predicate<T> = Predicate.Predicate<T>
 
@@ -31,7 +31,7 @@ export type SimpleList<E> = {
         self: SimpleList<E>
     ) -> boolean
 
-} & Interable<E>
+} & Iterable<E>
 
 local SimpleList = {}
 SimpleList.__index = SimpleList

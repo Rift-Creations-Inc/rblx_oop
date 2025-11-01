@@ -21,13 +21,6 @@ local DebugSharedVars = require(ReplicatedStorage.Shared.rblx_oop.classes.Screen
 local MemoryScreen = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.MemoryScreen)
 local screenShared = require(ReplicatedStorage.Shared.rblx_oop.classes.Screens.screenShared)
 
-local function generateSeed(): number
-    local t = os.clock() * 1e9
-    local pid = game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.UserId or math.random(1, 1e6)
-    local r = Random.new():NextInteger(0, 2^31 - 1)
-    return bit32.bxor(math.floor(t), pid, r)
-end
-
 local function write(txt: string)
     if config.client.debugClientMainRunner then
         print(`[ClientMainRunner] {txt}`)
