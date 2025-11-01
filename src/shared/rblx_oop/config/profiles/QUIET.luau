@@ -30,7 +30,8 @@ local Global = {
     doCoreDumps = true,
     debugCoreClass = false,
     traceStyle = "java",
-    useFullTrace = false
+    useFullTrace = false,
+    debugThreads = true
 }
 
 local Config = {

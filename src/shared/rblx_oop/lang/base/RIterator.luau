@@ -61,9 +61,13 @@ export type RIterator<T> = {
 
 function RIterator.new<T>(items: {T}): RIterator<T>
     local self = setmetatable({
-        items = items or {},
         _index = 0
     }, RIterator)
+    self.items = {}
+
+    for _, v in ipairs(items) do
+        table.insert(self.items,v)
+    end
 
     return self
 end
@@ -104,8 +108,11 @@ end
 
 function RIterator.map<T,U>(self: RIterator<T>, fn: (T) -> U): RIterator<U>
     local mapped = {}
-    for i = self._index + 1, #self.items do
-        table.insert(mapped,fn(self.items[i]))
+    local startIdx = self._index + 1
+    for i = startIdx, #self.items do
+        local item = self.items[i]
+        local mappedItem = fn(item)
+        table.insert(mapped,mappedItem)
     end
     return RIterator.new(mapped)
 end
@@ -118,6 +125,9 @@ function RIterator.filter<T>(self: RIterator<T>, fn: (T) -> boolean): RIterator<
             table.insert(filtered,v)
         end
     end
+
+    print(`filtered`, filtered)
+
     return RIterator.new(filtered)
 end
 
@@ -135,8 +145,9 @@ end
 function RIterator.fold<T,U>(self: RIterator<T>, init: U, fn: (U, T) -> U): U
     local acc = init
     for i = self._index + 1, #self.items do
-        acc = fn(acc, self.items)
+        acc = fn(acc, self.items[i])
     end
+
     return acc
 end
 

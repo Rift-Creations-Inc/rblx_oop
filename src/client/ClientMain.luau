@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 local Core = require(ReplicatedStorage.Shared.rblx_oop.classes.Core).get()
 local Testing = require(StarterPlayer.StarterPlayerScripts.Client.Tests.Testing)
+local ThreadTest = require(StarterPlayer.StarterPlayerScripts.Client.Tests.ThreadTest)
 local CommandClient = require(script.Parent.CommandClient)
 local BloxstrapRPC = require(ReplicatedStorage.Shared.external.BloxstrapRPC)
 local Text = require(ReplicatedStorage.Shared.rblx_oop.classes.Drawable.Text)
@@ -212,15 +213,7 @@ function ClientMain:Main()
     ClientMain.Time()
     --ClientMain.SayHi()
 
-    local myList: SimpleList.SimpleList<string> = SimpleList.new()
-    myList:add("string")
-    myList:add("hey!")
-    
-    myList:forEach(Consumer(function(x: string)
-        print(`forEach: {x}`)
-    end))
-
-    Testing()
+    ThreadTest()
     
     --print(`[CONFIGURATION] config.client.textSizeMultiplier={config.client.textSizeMultiplier}`)
     return

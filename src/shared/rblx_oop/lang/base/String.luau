@@ -1,4 +1,5 @@
 
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RIterator = require(script.Parent.RIterator)
 local NotImplementedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.NotImplementedException)
@@ -107,9 +108,9 @@ end
 function String.asStr(self: String): string
     local str = ""
 
-    for v in self.vec:iterator() do
-        str ..= string.char(v :: number)
-    end
+    self.vec:iterator():map(function(x: number)
+        str ..= string.char(x)
+    end)
 
     return str
 end

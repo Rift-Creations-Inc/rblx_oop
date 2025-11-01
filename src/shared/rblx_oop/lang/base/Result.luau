@@ -16,7 +16,11 @@ export type Result<T, E> = {
 
     unwrapErr: (
         self: Result<T, E>
-    ) -> E
+    ) -> E,
+
+    except: (
+        msg: string
+    ) -> T
 } & IBaseFeature<"Result">
 
 local Result = {}
@@ -38,6 +42,10 @@ function Result.Ok<T, E>(value: T): Result<T, E>
         error("called unwrapErr() on an Ok value")
     end
 
+    function this:except(): T
+        return value
+    end
+
     return this
 end
 
@@ -55,6 +63,10 @@ function Result.Err<T, E>(value: E): Result<T, E>
 
     function this:unwrapErr(): E
         return value
+    end
+
+    function this:except(msg: string): T
+        error(msg)
     end
 
     return this

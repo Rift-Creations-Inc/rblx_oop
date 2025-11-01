@@ -9,28 +9,29 @@
 
 local Client = {
     askToContinue = false,
-    debugClientMainRunner = true,
-    debugGraphics = true,
+    debugClientMainRunner = false,
+    debugGraphics = false,
     debugNotifications = true,
     memoryWatcher = {
         checkInterval = 15,
         threshold = 3000,
         debugCmw = true,
-        enabled = true,
+        enabled = false,
     },
     defaultFont = Enum.Font.Code,
     textSizeMultiplier = 0.85,
 }
 
 local Server = {
-    debugServerMainRunner = true,
+    debugServerMainRunner = false,
 }
 
 local Global = {
     doCoreDumps = true,
-    debugCoreClass = true,
+    debugCoreClass = false,
     traceStyle = "tree",
-    useFullTrace = false
+    useFullTrace = false,
+    debugThreads = true,
 }
 
 local Config = {

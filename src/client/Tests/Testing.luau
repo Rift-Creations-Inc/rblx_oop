@@ -5,6 +5,7 @@ local ResourceT = require(ReplicatedStorage.Shared.rblx_oop.lang.ResourceT)
     local CountedResouce = ResourceT.CountedResource
     
 local SimpleList = require(ReplicatedStorage.Shared.rblx_oop.lang.SimpleList)
+local RIterator = require(ReplicatedStorage.Shared.rblx_oop.lang.base.RIterator)
 local String = require(ReplicatedStorage.Shared.rblx_oop.lang.base.String)
 local OnceLock = require(ReplicatedStorage.Shared.rblx_oop.lang.sync.OnceLock)
 local RwLock = require(ReplicatedStorage.Shared.rblx_oop.lang.sync.RwLock)
@@ -70,23 +71,20 @@ return function()
 
     warn(`done test 2`)
 
-    local str = String.from("Foo")
+    local cool = {1,2,3,4,5,7,2,10}
+    local iter = RIterator.new(cool)
+    local evens = iter:filter(function(x: number)
+        print(`{x} % 2`)
+        if x % 2 == 0 then
+            print(` yes`)
+            return true 
+        end
 
-    print(str + "Bar")
-
-    local exclamation = String.from("!")
-
-    print(str + exclamation)
-
-    local isUppercase = Predicate(function(c: string)
-        if c:upper() == c then return true end
-
+        print(` no`)
         return false
-    end)
+    end):collect()
 
-    local str1: String = str + "Bar"
-
-    print(str1)
+    print(evens)
 
     warn(`done test 3`)
 
@@ -96,4 +94,8 @@ return function()
         testValue:iterator():filter(function(s) 
             return s == '_'
     end):collect())
+
+    warn(`done test 4`)
+
+    require(script.Parent.ThreadTest)()
 end
