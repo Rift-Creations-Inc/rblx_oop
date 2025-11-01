@@ -1,8 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RIterator = require(script.Parent.RIterator)
 local Safe = require(script.Parent.Safe)
 local IBaseFeature = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.IBaseFeature)
 
 type IBaseFeature<N> = IBaseFeature.IBaseFeature<N>
+type RIterator<T> = RIterator.RIterator<T>
 
 export type Vec<T> = {
     items: {T},
@@ -31,7 +33,7 @@ export type Vec<T> = {
 
     iterator: (
         self: Vec<T>
-    ) -> () -> (T?),
+    ) -> RIterator<T>,
 
     remove: (
         self: Vec<T>,
@@ -71,14 +73,8 @@ function Vec.clear<T>(self: Vec<T>): number
     self.items = {}
 end
 
-function Vec.iterator<T>(self: Vec<T>): () -> T?
-    local index = 0
-    local items = self.items
-
-    return function()
-        index += 1
-        return items[index]
-    end
+function Vec.iterator<T>(self: Vec<T>): RIterator<T>
+    return RIterator.new(self.items)
 end
 
 function Vec.remove<T>(self: Vec<T>, index: number): T?

@@ -83,11 +83,17 @@ return function()
 
         return false
     end)
-    local isLowercase = isUppercase.negate
 
     local str1: String = str + "Bar"
 
     print(str1)
 
     warn(`done test 3`)
+
+    local testValue: String = String.from("test_value")
+
+    print(
+        testValue:iterator():filter(function(s) 
+            return s == '_'
+    end):collect())
 end

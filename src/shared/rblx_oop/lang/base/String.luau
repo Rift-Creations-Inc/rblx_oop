@@ -1,5 +1,6 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RIterator = require(script.Parent.RIterator)
 local NotImplementedException = require(ReplicatedStorage.Shared.rblx_oop.classes.Throwable.Exception.RuntimeException.NotImplementedException)
 local Safe = require(script.Parent.Safe)
 local Vec = require(script.Parent.Vec)
@@ -12,12 +13,11 @@ local function _dbg(str: string)
 end
 
 local IBaseFeature = require(ReplicatedStorage.Shared.rblx_oop.lang.Interfaces.IBaseFeature)
-local Iterator = require(ReplicatedStorage.Shared.rblx_oop.util.Iterator)
 local Consumer = require(ReplicatedStorage.Shared.rblx_oop.util['function'].Consumer)
 type IBaseFeature<N> = IBaseFeature.IBaseFeature<N>
 
+type RIterator<T> = RIterator.RIterator<T>
 type Consumer<T> = Consumer.Consumer<T>
-type Iterator<E> = Iterator.Iterator<E>
 type u8 = u8.u8
 type Vec<T> = Vec.Vec<T>
 
@@ -63,7 +63,7 @@ export type String = {
     
     iterator: (
         self: String
-    ) -> Iterator.Iterator<String>
+    ) -> RIterator<String>
     
 } & IBaseFeature<"String">
 
@@ -122,13 +122,13 @@ function String.pushStr(self: String, append: String): String
     return self
 end
 
-function String.push(self: String, char: string)
+function String.push(self: String, char: string): String
     self.vec:push(char)
 
     return String
 end
 
-function String.remove(self: String, idx: number): string
+function String.remove(self: String, idx: number): String
     if idx > self.vec:size() then
         return nil
     end
@@ -149,34 +149,8 @@ function String.clear(self: String): String
 end
 
 
-function String.iterator(self: String): Iterator<String>
-    local index = 0
-    local items = self.vec.items
-
-    local iter: Iterator<string> = {
-        hasNext = function(): boolean
-            return index < #items
-        end,
-
-        next = function(): string
-            index += 1
-            return items[index]
-        end,
-
-        remove = function(): never
-            NotImplementedException.new("remove is not implemented")
-            return
-        end,
-
-        forEachRemaining = function(action: Consumer<string>): never
-            while index < #items do
-                index += 1
-                action:accept(items[index])
-            end
-        end
-    }
-
-    return iter
+function String.iterator(self: String): RIterator<String>
+    return self.vec:iterator()
 end
 
 local function Normalize(x: any)
