@@ -30,7 +30,7 @@ Creates a `String` from the specified value (`value`).
 
 ---
 
-### `String.withCapacity() -> String`
+### `String.withCapacity(size: number) -> String`
 Creates an empty `String` with reserved capacity.
 
 ---
